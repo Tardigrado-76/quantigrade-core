@@ -1,0 +1,383 @@
+openapi: "3.1.0"
+info:
+  title: Quantigrade Compliance Engine API
+  version: "2.0.0"
+  description: |
+    **Enterprise REST API for automated regulatory compliance auditing.**
+
+    Provides endpoints for:
+    - **DORA** Article 18 / RTS EBA major incident classification
+    - **ENS Alta / NIS2** control verification
+    - **Post-Quantum Cryptography** (FIPS 204 ML-DSA) signature verification
+    - **RGPD** data breach assessment
+
+    All endpoints are:
+    - Idempotent (GET) or deterministic (POST)
+    - Fully auditable (structured JSON logs)
+    - Protected by JWT Bearer authentication
+  contact:
+    name: Tardigrado-76
+    url: https://github.com/Tardigrado-76/quantigrade-core
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.quantigrade.io
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Health
+    description: Service health and readiness probes
+  - name: DORA
+    description: DORA Article 18 incident classification (RTS EBA)
+  - name: ENS
+    description: Esquema Nacional de Seguridad (RD 311/2022) controls
+  - name: PQC
+    description: Post-Quantum Cryptography (FIPS 204 ML-DSA) operations
+  - name: RGPD
+    description: RGPD / LOPDGDD data protection controls
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      operationId: health_check
+      summary: Service liveness probe
+      security: []
+      responses:
+        "200":
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: "2.0.0"
+
+  /api/v1/audit/dora:
+    post:
+      tags: [DORA]
+      operationId: classify_dora_incident
+      summary: Classify a DORA major incident (RTS EBA Art. 18)
+      description: |
+        Evaluates all quantitative (Art.3) and qualitative (Art.4) thresholds
+        defined in Commission Delegated Regulation (EU) 2024/1774 to determine
+        if the ICT incident qualifies as a Major Incident under DORA.
+
+        Returns severity classification, notification deadlines, and the
+        list of mandatory regulatory reports.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DORAIncidentInput"
+            example:
+              clients_affected: 175000
+              downtime_hours: 4.5
+              economic_loss_eur: 300000
+              eu_countries_affected: 3
+              affects_critical_service: true
+              data_integrity_compromised: true
+              transaction_value_eur: 0
+      responses:
+        "200":
+          description: Classification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DORAClassificationResult"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/audit/dora/thresholds:
+    get:
+      tags: [DORA]
+      operationId: get_dora_thresholds
+      summary: Return current RTS EBA classification thresholds
+      description: Returns the active regulatory thresholds used for DORA Art.18 classification.
+      responses:
+        "200":
+          description: Active threshold values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clients_major:
+                    type: integer
+                    example: 100000
+                  downtime_hours_major:
+                    type: number
+                    example: 2.0
+                  economic_loss_eur_major:
+                    type: integer
+                    example: 100000
+                  transaction_value_eur_major:
+                    type: integer
+                    example: 5000000
+                  cross_border_countries_major:
+                    type: integer
+                    example: 2
+                  regulatory_reference:
+                    type: string
+                    example: "Commission Delegated Regulation (EU) 2024/1774"
+
+  /api/v1/pqc/verify:
+    post:
+      tags: [PQC]
+      operationId: verify_pqc_signature
+      summary: Verify a FIPS 204 (ML-DSA) post-quantum digital signature
+      description: |
+        Verifies a post-quantum digital signature produced with the
+        ML-DSA algorithm (FIPS 204). Supports ML-DSA-44, ML-DSA-65,
+        and ML-DSA-87 variants.
+
+        Used for immutable log integrity verification and audit trail
+        trazability (CRA / DORA compliance).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PQCVerificationInput"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PQCVerificationResult"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/v1/audit/ens/access-control:
+    post:
+      tags: [ENS]
+      operationId: audit_ens_access_control
+      summary: Audit ENS Alta access control (op.acc.1)
+      description: Validates access control policies against ENS Alta control op.acc.1 (RD 311/2022).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [target_path]
+              properties:
+                target_path:
+                  type: string
+                  description: Absolute path to directory to audit
+                  example: "/var/www/app"
+      responses:
+        "200":
+          description: ENS access control audit result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  compliant:
+                    type: boolean
+                  findings:
+                    type: array
+                    items:
+                      type: string
+                  control_reference:
+                    type: string
+                    example: "ENS Alta op.acc.1 (RD 311/2022)"
+
+  /api/v1/rgpd/breach-assessment:
+    post:
+      tags: [RGPD]
+      operationId: assess_rgpd_breach
+      summary: Assess a RGPD personal data breach (Art. 33-34)
+      description: |
+        Evaluates the severity of a personal data breach and determines
+        if notification to the AEPD is mandatory within 72 hours.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [records_affected, data_categories, breach_type]
+              properties:
+                records_affected:
+                  type: integer
+                  minimum: 0
+                  example: 5000
+                data_categories:
+                  type: array
+                  items:
+                    type: string
+                    enum: [basic, financial, health, special_art9, criminal]
+                  example: ["financial", "basic"]
+                breach_type:
+                  type: string
+                  enum: [confidentiality, integrity, availability]
+                  example: confidentiality
+      responses:
+        "200":
+          description: Breach assessment result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requires_aepd_notification:
+                    type: boolean
+                  notification_deadline_hours:
+                    type: integer
+                    example: 72
+                  risk_level:
+                    type: string
+                    enum: [low, medium, high, very_high]
+                  regulatory_reference:
+                    type: string
+                    example: "RGPD Art. 33-34 / LOPDGDD"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication service
+
+  schemas:
+    DORAIncidentInput:
+      type: object
+      required:
+        - clients_affected
+        - downtime_hours
+        - economic_loss_eur
+        - eu_countries_affected
+        - affects_critical_service
+        - data_integrity_compromised
+      properties:
+        clients_affected:
+          type: integer
+          minimum: 0
+          description: Number of clients impacted by the incident
+        downtime_hours:
+          type: number
+          minimum: 0
+          description: Service unavailability duration in hours
+        economic_loss_eur:
+          type: integer
+          minimum: 0
+          description: Estimated economic impact in EUR
+        eu_countries_affected:
+          type: integer
+          minimum: 1
+          maximum: 27
+          description: Number of EU Member States impacted
+        affects_critical_service:
+          type: boolean
+          description: Does the incident affect a critical or essential function?
+        data_integrity_compromised:
+          type: boolean
+          description: Was data integrity or confidentiality impacted?
+        transaction_value_eur:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Value of affected transactions in EUR
+
+    DORAClassificationResult:
+      type: object
+      required:
+        - is_major_incident
+        - severity_level
+        - notification_deadline_hours
+        - triggered_thresholds
+        - required_reports
+      properties:
+        is_major_incident:
+          type: boolean
+        severity_level:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        notification_deadline_hours:
+          type: integer
+          example: 2
+        triggered_thresholds:
+          type: array
+          items:
+            type: string
+        regulatory_reference:
+          type: string
+          example: "DORA Art.18 / RTS EBA (EU) 2024/1774"
+        required_reports:
+          type: array
+          items:
+            type: string
+
+    PQCVerificationInput:
+      type: object
+      required: [message, signature_hex, public_key_hex]
+      properties:
+        message:
+          type: string
+          minLength: 1
+        signature_hex:
+          type: string
+          minLength: 64
+        public_key_hex:
+          type: string
+          minLength: 64
+        algorithm:
+          type: string
+          enum: ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87"]
+          default: "ML-DSA-87"
+
+    PQCVerificationResult:
+      type: object
+      properties:
+        is_valid:
+          type: boolean
+        algorithm:
+          type: string
+        standard:
+          type: string
+          example: "FIPS 204 (ML-DSA)"
+        detail:
+          type: string
+
+  responses:
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: array
+                items:
+                  type: object
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Not authenticated"
