@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantigrade &mdash; Compliance-as-Code &amp; Post-Quantum Resilience</title>
+  <meta name="description" content="Quantigrade automates DORA, NIS2, EU AI Act, CRA, and RGPD compliance with 16 active audit modules, post-quantum cryptography (FIPS 204), and Zero Trust architecture." />
+  <meta property="og:title" content="Quantigrade &mdash; Compliance-as-Code &amp; Post-Quantum Resilience" />
+  <meta property="og:description" content="16 active modules. 7 frameworks. One command. Replace regulatory paralysis with executable audits." />
+  <meta property="og:url" content="https://tardigrado-76.github.io/quantigrade-core" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#0B0F19',
+            card: '#111827',
+            border: '#1F2937',
+            cyan: { 400: '#22D3EE', DEFAULT: '#06B6D4', 600: '#0891B2' },
+            emerald: { DEFAULT: '#10B981', 400: '#34D399' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 20px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.05)',
+            'glow-emerald': '0 0 20px rgba(16,185,129,0.15), 0 0 40px rgba(16,185,129,0.05)',
+            'glow-cyan-strong': '0 0 30px rgba(6,182,212,0.35)',
+          },
+          animation: {
+            'blink': 'blink 1.2s step-end infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            blink: { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } },
+            float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-8px)' } },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    html { background-color: #0B0F19; }
+    body { background-color: #0B0F19; color: #F9FAFB; font-family: 'Inter', sans-serif; }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(6,182,212,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6,182,212,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .glass {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(31, 41, 55, 0.8);
+    }
+    .module-card {
+      background: #111827;
+      border: 1px solid #1F2937;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(6,182,212,0.05) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .module-card:hover { border-color: rgba(6,182,212,0.4); transform: translateY(-3px); box-shadow: 0 0 30px rgba(6,182,212,0.12), 0 20px 40px rgba(0,0,0,0.4); }
+    .module-card:hover::before { opacity: 1; }
+    .module-card .card-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #06B6D4, transparent); opacity: 0; transition: opacity 0.3s ease; }
+    .module-card:hover .card-accent { opacity: 1; }
+    .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25); color: #06B6D4; letter-spacing: 0.05em; font-weight: 500; display: inline-block; }
+    .terminal-window {
+      background: #0D1117;
+      border: 1px solid #1F2937;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(6,182,212,0.1), 0 20px 60px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    .terminal-window::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(6,182,212,0.5), transparent); }
+    .terminal-bar { background: #161B22; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1F2937; }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-body { padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.8; min-height: 240px; }
+    .terminal-prompt { color: #06B6D4; }
+    .terminal-cmd { color: #F9FAFB; }
+    .log-time { color: #4B5563; }
+    .log-bar { color: #374151; }
+    .log-text { color: #9CA3AF; }
+    .log-ok { color: #10B981; }
+    .log-warn { color: #F59E0B; }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: #06B6D4; animation: blink 1.2s step-end infinite; vertical-align: middle; margin-left: 2px; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .metric-card {
+      background: rgba(17,24,39,0.8);
+      border: 1px solid #1F2937;
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .metric-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(6,182,212,0.04), transparent); }
+    .metric-card:hover { border-color: rgba(6,182,212,0.3); box-shadow: 0 0 25px rgba(6,182,212,0.1); transform: translateY(-2px); }
+    .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 700; background: linear-gradient(135deg, #06B6D4, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+    .compliance-table th { background: rgba(6,182,212,0.08); color: #06B6D4; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 16px; border-bottom: 1px solid #1F2937; font-weight: 600; }
+    .compliance-table td { padding: 16px; border-bottom: 1px solid rgba(31,41,55,0.5); font-size: 0.82rem; color: #9CA3AF; vertical-align: top; line-height: 1.6; }
+    .compliance-table tr:last-child td { border-bottom: none; }
+    .compliance-table tr:hover td { background: rgba(6,182,212,0.03); }
+    .compliance-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #E5E7EB; font-weight: 600; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+    .orb-cyan { background: radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%); }
+    .orb-emerald { background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%); }
+    .nav-scrolled { box-shadow: 0 1px 0 #1F2937, 0 4px 20px rgba(0,0,0,0.4); }
+    .section-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: #06B6D4; font-weight: 500; }
+    .gradient-text { background: linear-gradient(135deg, #06B6D4 0%, #10B981 50%, #06B6D4 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    .sep { height: 1px; background: linear-gradient(90deg, transparent, #1F2937 20%, #1F2937 80%, transparent); }
+    .fw-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 6px; letter-spacing: 0.05em; }
+    .fw-dora { background: rgba(239,68,68,0.15); color: #F87171; border: 1px solid rgba(239,68,68,0.2); }
+    .fw-nis2 { background: rgba(139,92,246,0.15); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); }
+    .fw-ai { background: rgba(245,158,11,0.15); color: #FCD34D; border: 1px solid rgba(245,158,11,0.2); }
+    .fw-cra { background: rgba(6,182,212,0.15); color: #67E8F9; border: 1px solid rgba(6,182,212,0.2); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 4px; }
+    .hero-line { height: 1px; background: linear-gradient(90deg, transparent, #06B6D4, #10B981, transparent); }
+    @media (max-width: 768px) { .metric-value { font-size: 1.8rem; } }
+  </style>
+</head>
+<body class="relative">
+
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <div class="glass border-b border-border">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="relative w-8 h-8">
+          <div class="absolute inset-0 rounded-lg bg-cyan-DEFAULT opacity-20 animate-pulse"></div>
+          <div class="relative w-8 h-8 rounded-lg border border-cyan-DEFAULT/40 flex items-center justify-center">
+            <svg class="w-4 h-4 text-cyan-DEFAULT" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 01.75 12c0 2.917 1.04 5.594 2.748 7.647A11.96 11.96 0 003.598 18 11.955 11.955 0 0112 21.25c2.917 0 5.594-1.04 7.652-2.748A11.96 11.96 0 0020.4 18a11.955 11.955 0 002.852-6A11.959 11.959 0 0020.4 6a11.96 11.96 0 00-2.748-2.25A11.955 11.955 0 0012 1.75c-2.917 0-5.594 1.04-7.652 2.75L4.346 4.5z" /></svg>
+          </div>
+        </div>
+        <span class="font-mono font-bold text-lg tracking-wider text-white">QUANTIGRADE</span>
+        <div class="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-emerald-DEFAULT/10 border border-emerald-DEFAULT/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT animate-pulse"></span>
+          <span class="font-mono text-xs text-emerald-DEFAULT font-medium tracking-wider">PLATFORM OPERATIONAL</span>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#modules" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Modules</a>
+        <a href="#compliance" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Compliance</a>
+        <a href="#architect" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Architect</a>
+        <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Docs</a>
+      </div>
+      <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-DEFAULT/10 border border-cyan-DEFAULT/30 text-cyan-DEFAULT text-sm font-mono font-medium hover:bg-cyan-DEFAULT/20 hover:border-cyan-DEFAULT/60 transition-all duration-200">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<section class="relative min-h-screen flex items-center grid-bg pt-20 overflow-hidden">
+  <div class="orb orb-cyan w-96 h-96 -top-40 -left-40 opacity-60" style="width:600px;height:600px;"></div>
+  <div class="orb orb-emerald" style="width:500px;height:500px;top:50%;right:-15rem;opacity:0.5;"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8">
+        <div class="flex items-center gap-3">
+          <div class="h-px w-8 bg-cyan-DEFAULT"></div>
+          <span class="section-eyebrow">Enterprise Security Platform</span>
+        </div>
+        <h1 class="text-5xl xl:text-6xl font-extrabold leading-tight tracking-tight">
+          <span class="text-white">Compliance-as-Code</span><br/>
+          <span class="gradient-text">Meets Post-Quantum</span><br/>
+          <span class="text-white">Resilience.</span>
+        </h1>
+        <p class="text-lg text-gray-400 leading-relaxed max-w-xl">Europe's regulatory landscape isn't slowing down &mdash; DORA is enforced, NIS2 is transposing, the AI Act is live, and CRA deadlines are closing in. Most organizations are still stuck in spreadsheets.</p>
+        <p class="text-lg font-semibold text-gray-200 leading-relaxed max-w-xl">Quantigrade replaces regulatory paralysis with executable audits. <span class="text-cyan-DEFAULT">16 active modules. 7 frameworks. One command.</span></p>
+        <div class="flex flex-wrap gap-2">
+          <span class="tag">DORA</span><span class="tag">NIS2</span><span class="tag">EU AI Act</span><span class="tag">CRA</span><span class="tag">RGPD</span><span class="tag">ENS Alta</span><span class="tag">OWASP LLM</span>
+        </div>
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-cyan-DEFAULT font-semibold text-sm hover:bg-cyan-400 transition-all duration-200" style="color:#0B0F19;box-shadow:0 0 30px rgba(6,182,212,0.35);">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            View on GitHub
+          </a>
+          <a href="https://github.com/Tardigrado-76/quantigrade-core/tree/main/docs/adr" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-700 text-gray-300 text-sm font-medium hover:border-cyan-DEFAULT/40 hover:text-white transition-all duration-200">Read the Architecture &rarr;</a>
+        </div>
+      </div>
+      <div class="relative" style="animation: float 6s ease-in-out infinite;">
+        <div class="absolute -inset-4 rounded-2xl blur-2xl" style="background:rgba(6,182,212,0.05);"></div>
+        <div class="terminal-window relative">
+          <div class="terminal-bar">
+            <div class="terminal-dot" style="background:#EF4444;opacity:0.7;"></div>
+            <div class="terminal-dot" style="background:#EAB308;opacity:0.7;"></div>
+            <div class="terminal-dot" style="background:#10B981;opacity:0.7;"></div>
+            <span class="ml-3 text-xs font-mono text-gray-500 tracking-wider">quantigrade &mdash; audit engine v2.0</span>
+            <div class="ml-auto flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT animate-pulse"></span>
+              <span class="font-mono text-xs text-emerald-DEFAULT">LIVE</span>
+            </div>
+          </div>
+          <div class="terminal-body" id="terminal">
+            <div class="mb-3"><span class="terminal-prompt">&#10095; </span><span class="terminal-cmd">quantigrade audit --mode full --frameworks dora,nis2,cra,ai-act,rgpd,ens</span></div>
+            <div id="log-lines" class="space-y-1"></div>
+            <div id="terminal-cursor" class="mt-2 hidden"><span class="terminal-prompt">&#10095; </span><span class="cursor"></span></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <div class="glass rounded-lg p-3 text-center border border-gray-800"><div class="font-mono text-lg font-bold text-cyan-DEFAULT">16</div><div class="text-xs text-gray-500 mt-0.5">Modules</div></div>
+          <div class="glass rounded-lg p-3 text-center border border-gray-800"><div class="font-mono text-lg font-bold text-emerald-DEFAULT">142</div><div class="text-xs text-gray-500 mt-0.5">Controls</div></div>
+          <div class="glass rounded-lg p-3 text-center border border-gray-800"><div class="font-mono text-lg font-bold text-cyan-DEFAULT">7</div><div class="text-xs text-gray-500 mt-0.5">Frameworks</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-0 left-0 right-0 hero-line"></div>
+</section>
+
+<section id="modules" class="relative py-28 overflow-hidden">
+  <div class="orb orb-emerald" style="width:400px;height:400px;top:5rem;left:-10rem;opacity:0.4;"></div>
+  <div class="orb orb-cyan" style="width:500px;height:500px;bottom:0;right:-15rem;opacity:0.3;"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 space-y-4">
+      <div class="flex items-center justify-center gap-3"><div class="h-px w-8 bg-cyan-DEFAULT opacity-60"></div><span class="section-eyebrow">Core Modules</span><div class="h-px w-8 bg-cyan-DEFAULT opacity-60"></div></div>
+      <h2 class="text-4xl font-bold text-white">16 Active Audit Modules.<br/><span class="gradient-text">Zero Regulatory Blind Spots.</span></h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">Each module implements the exact article-level controls required by EU regulatory frameworks &mdash; not approximations, not interpretations. Executable, testable, auditable.</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F6A8;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-01</span></div><h3 class="text-base font-semibold text-white mb-1">DORA Art. 18</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">Major Incident Classification</p><p class="text-sm text-gray-400 leading-relaxed mb-5">Automated severity calculator implementing all five quantitative thresholds and both qualitative gates defined in Commission Delegated Regulation (EU) 2024/1774. Generates tiered notification packages &mdash; initial (2h), intermediate (24h), and final (1 month) &mdash; ready for submission to your National Competent Authority.</p><div class="flex flex-wrap gap-2"><span class="tag">RTS EBA</span><span class="tag">Art.17-23</span><span class="tag">ANC Reporting</span></div></div>
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F510;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-02</span></div><h3 class="text-base font-semibold text-white mb-1">FIPS 204</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">Post-Quantum Signature Integrity</p><p class="text-sm text-gray-400 leading-relaxed mb-5">Hybrid signature scheme pairing classical ECDSA P-384 with ML-DSA-87 to protect audit logs against harvest-now-decrypt-later attacks. Merkle tree root hashes are PQC-signed before storage, ensuring 25+ year verifiability across retention mandates.</p><div class="flex flex-wrap gap-2"><span class="tag">FIPS 204</span><span class="tag">ML-KEM</span><span class="tag">Crypto Agility</span></div></div>
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F916;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-03</span></div><h3 class="text-base font-semibold text-white mb-1">EU AI Act</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">High-Risk System Governance</p><p class="text-sm text-gray-400 leading-relaxed mb-5">Risk classification matrix for AI systems under Annex III, with integrated OWASP LLM Top 10 scanning for RAG pipelines. Enforces Human-In-The-Loop (HITL) override gates, dataset bias auditing, and real-time PII detection to block prompt injection and training data poisoning.</p><div class="flex flex-wrap gap-2"><span class="tag">HITL Zero Trust</span><span class="tag">OWASP LLM</span><span class="tag">RAG Regulado</span></div></div>
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F4E6;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-04</span></div><h3 class="text-base font-semibold text-white mb-1">CRA</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">Supply Chain Security</p><p class="text-sm text-gray-400 leading-relaxed mb-5">End-to-end software supply chain hardening: SBOM generation in CycloneDX 1.6 format, real-time cross-referencing against the CISA Known Exploited Vulnerabilities catalog, and SLSA Level 3+ provenance verification. VEX advisory aggregation ensures your NIS2 supply chain reporting is always current.</p><div class="flex flex-wrap gap-2"><span class="tag">CycloneDX 1.6</span><span class="tag">CISA KEV Gate</span><span class="tag">SLSA L3+</span></div></div>
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F517;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-05</span></div><h3 class="text-base font-semibold text-white mb-1">Merkle Tree</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">SHA-256 Log Integrity</p><p class="text-sm text-gray-400 leading-relaxed mb-5">Every audit event is hashed into a Merkle tree structure, producing a single root hash cryptographically signed with ML-DSA-87. Any post-hoc modification to a single log entry invalidates the entire chain &mdash; providing mathematical tamper evidence that satisfies DORA Art. 12.</p><div class="flex flex-wrap gap-2"><span class="tag">SHA-256</span><span class="tag">Tamper Evidence</span><span class="tag">DORA Art.12</span></div></div>
+      <div class="module-card rounded-xl p-6"><div class="card-accent"></div><div class="flex items-start justify-between mb-4"><div class="text-3xl">&#x1F6E1;&#xFE0F;</div><span class="font-mono text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">MODULE-06</span></div><h3 class="text-base font-semibold text-white mb-1">ENS Alta + DISA STIG</h3><p class="text-xs font-mono text-cyan-DEFAULT mb-3 tracking-wide">Automated OS Hardening</p><p class="text-sm text-gray-400 leading-relaxed mb-5">Automated application of ENS Nivel Alto security policies via CLARAfix_ALTO.ps1 (CCN-CERT) and DISA STIG hardening baselines. Includes mTLS Zero Trust certificate generation (ECDSA P-384), FIPS 140-3 zeroization auditing, and CIS Benchmark verification.</p><div class="flex flex-wrap gap-2"><span class="tag">CLARAfix ALTO</span><span class="tag">mTLS P-384</span><span class="tag">DISA STIG</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="compliance" class="relative py-28 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 space-y-4">
+      <div class="flex items-center justify-center gap-3"><div class="h-px w-8 opacity-60" style="background:#10B981;"></div><span class="section-eyebrow" style="color:#10B981;">Compliance Coverage</span><div class="h-px w-8 opacity-60" style="background:#10B981;"></div></div>
+      <h2 class="text-4xl font-bold text-white">One Control. <span class="gradient-text">Four Frameworks.</span></h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">Every technical control in Quantigrade is mapped to specific regulatory articles across all active EU frameworks. This is not checkbox compliance &mdash; it is enforceable, testable, and auditable evidence.</p>
+    </div>
+    <div class="glass rounded-xl overflow-hidden border border-gray-800">
+      <div class="overflow-x-auto">
+        <table class="w-full compliance-table">
+          <thead><tr>
+            <th class="text-left" style="width:180px;">Technical Control</th>
+            <th class="text-left"><span class="fw-badge fw-dora">DORA</span><br/>EU 2022/2554</th>
+            <th class="text-left"><span class="fw-badge fw-nis2">NIS2</span><br/>EU 2022/2555</th>
+            <th class="text-left"><span class="fw-badge fw-ai">EU AI ACT</span><br/>EU 2024/1689</th>
+            <th class="text-left"><span class="fw-badge fw-cra">CRA</span><br/>EU 2024/2847</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><div class="font-mono text-xs mb-1" style="color:#34D399;">SBOM + KEV Gate</div><div class="text-xs text-gray-500">CycloneDX 1.6 &middot; CISA</div></td><td>Art. 9 &sect;2 &mdash; ICT risk management framework for third-party dependencies</td><td>Art. 21 &sect;2(d) &mdash; Supply chain security measures</td><td>Art. 15 &sect;1 &mdash; Accuracy and cybersecurity of AI systems</td><td>Art. 13 &sect;7 &mdash; Software Bill of Materials for products with digital elements</td></tr>
+            <tr><td><div class="font-mono text-xs mb-1" style="color:#34D399;">PQC Signature</div><div class="text-xs text-gray-500">FIPS 204 &middot; ML-DSA-87</div></td><td>Art. 12 &sect;1 &mdash; Classification, reporting and integrity of ICT incident data</td><td>Art. 23 &sect;4(c) &mdash; Technical evidence preservation in incident reports</td><td>Art. 15 &sect;4 &mdash; Resilience against unauthorized third-party manipulation</td><td>Art. 10 &sect;6 &mdash; Cryptographic protection of product security updates</td></tr>
+            <tr><td><div class="font-mono text-xs mb-1" style="color:#34D399;">HITL + RAG</div><div class="text-xs text-gray-500">Zero Trust &middot; Guardrails</div></td><td>Art. 16 &sect;3 &mdash; Human oversight in ICT risk decision-making</td><td>Art. 7 &sect;2(a) &mdash; Risk-based cybersecurity governance</td><td>Art. 14 &sect;1-4 &mdash; Human oversight of high-risk AI systems (Annex III)</td><td>Art. 13 &sect;9 &mdash; Vulnerability reporting and coordinated disclosure</td></tr>
+            <tr><td><div class="font-mono text-xs mb-1" style="color:#34D399;">Merkle Immutability</div><div class="text-xs text-gray-500">SHA-256 &middot; ML-DSA</div></td><td>Art. 12 &sect;3(c) &mdash; Tamper-evident data retention for supervisory review</td><td>Art. 23 &sect;3 &mdash; Integrity of notification data to competent authorities</td><td>Art. 12 &sect;1 &mdash; Record-keeping and logging for high-risk AI systems</td><td>Art. 10 &sect;9 &mdash; Demonstrable integrity of security assessment records</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="architect" class="relative py-28 overflow-hidden">
+  <div class="orb orb-cyan" style="width:600px;height:600px;top:0;left:50%;transform:translateX(-50%);opacity:0.2;"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 space-y-4">
+      <div class="flex items-center justify-center gap-3"><div class="h-px w-8 bg-cyan-DEFAULT opacity-60"></div><span class="section-eyebrow">Platform Integrity</span><div class="h-px w-8 bg-cyan-DEFAULT opacity-60"></div></div>
+      <h2 class="text-4xl font-bold text-white">Engineered by an Architect.<br/><span class="gradient-text">Verified by Machines.</span></h2>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-10 items-start">
+      <div class="glass rounded-xl p-8 border border-gray-800 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(6,182,212,0.5),transparent);"></div>
+        <div class="flex items-start gap-5 mb-6">
+          <div class="relative flex-shrink-0">
+            <div class="w-16 h-16 rounded-xl border border-gray-800 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(16,185,129,0.2));">
+              <span class="font-mono font-bold text-xl text-cyan-DEFAULT">JL</span>
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 animate-pulse" style="background:#10B981;border-color:#0B0F19;"></div>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Jos&eacute; Luis Casal</h3>
+            <p class="text-sm text-cyan-DEFAULT font-mono">Principal Security Architect</p>
+            <p class="text-xs text-gray-500 mt-1">Enterprise Integration Lead</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-400 leading-relaxed mb-6">15+ years designing and deploying secure infrastructure across financial services, telecommunications, and critical infrastructure sectors. Former Key Account Manager bridging C-level business strategy with hands-on DevSecOps execution. End-to-end ownership: from regulatory gap analysis to production-hardened code, CI/CD pipelines, and executive CISO reporting.</p>
+        <div class="sep mb-6"></div>
+        <p class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-3">Core Expertise</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="tag">DORA/NIS2</span><span class="tag">FIPS 203/204</span><span class="tag">Zero Trust</span><span class="tag">ENS Alta</span><span class="tag">Supply Chain</span><span class="tag">AI Governance</span>
+        </div>
+        <div class="sep mb-6"></div>
+        <div class="flex gap-4">
+          <a href="https://github.com/Tardigrado-76" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            Tardigrado-76
+          </a>
+          <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-cyan-DEFAULT transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            quantigrade-core
+          </a>
+        </div>
+      </div>
+      <div class="space-y-5">
+        <p class="text-xs font-mono text-gray-500 uppercase tracking-wider">Platform Validation &mdash; CI/CD Verified</p>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="metric-card"><div class="section-eyebrow mb-3">Modules</div><div class="metric-value">16/16</div><div class="mt-3 text-xs text-gray-500 leading-relaxed">Zero syntax errors across the entire platform <span class="font-mono" style="color:#4B5563;">(py_compile)</span></div></div>
+          <div class="metric-card"><div class="section-eyebrow mb-3">SAST Flaws</div><div class="metric-value" style="background:linear-gradient(135deg,#10B981,#34D399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0</div><div class="mt-3 text-xs text-gray-500 leading-relaxed">Bandit: 0 Medium, 0 High, 0 Critical findings</div></div>
+          <div class="metric-card"><div class="section-eyebrow mb-3">Type Coverage</div><div class="metric-value">100%</div><div class="mt-3 text-xs text-gray-500 leading-relaxed">Full <span class="font-mono" style="color:#4B5563;">mypy --strict</span> &mdash; no Any escape hatches</div></div>
+          <div class="metric-card"><div class="section-eyebrow mb-3">Audit Latency</div><div class="metric-value">&lt;100ms</div><div class="mt-3 text-xs text-gray-500 leading-relaxed">Classification engine overhead per evaluation (p99)</div></div>
+        </div>
+        <div class="glass rounded-lg p-4 border border-gray-800">
+          <p class="text-xs text-gray-500 font-mono mb-3 uppercase tracking-wider">CI/CD Pipeline Status</p>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between"><span class="text-xs text-gray-400 font-mono">ruff check + format</span><span class="flex items-center gap-1.5 text-xs text-emerald-DEFAULT font-mono"><span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT"></span>PASSING</span></div>
+            <div class="flex items-center justify-between"><span class="text-xs text-gray-400 font-mono">mypy --strict</span><span class="flex items-center gap-1.5 text-xs text-emerald-DEFAULT font-mono"><span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT"></span>PASSING</span></div>
+            <div class="flex items-center justify-between"><span class="text-xs text-gray-400 font-mono">bandit SAST</span><span class="flex items-center gap-1.5 text-xs text-emerald-DEFAULT font-mono"><span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT"></span>PASSING</span></div>
+            <div class="flex items-center justify-between"><span class="text-xs text-gray-400 font-mono">pytest --cov&ge;80</span><span class="flex items-center gap-1.5 text-xs text-emerald-DEFAULT font-mono"><span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT"></span>PASSING</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-gray-800">
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid md:grid-cols-3 gap-8 mb-10">
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 rounded border flex items-center justify-center" style="background:rgba(6,182,212,0.2);border-color:rgba(6,182,212,0.3);">
+            <svg class="w-3 h-3 text-cyan-DEFAULT" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 01.75 12c0 2.917 1.04 5.594 2.748 7.647A11.96 11.96 0 003.598 18 11.955 11.955 0 0112 21.25c2.917 0 5.594-1.04 7.652-2.748A11.96 11.96 0 0020.4 18a11.955 11.955 0 002.852-6A11.959 11.959 0 0020.4 6a11.96 11.96 0 00-2.748-2.25A11.955 11.955 0 0012 1.75c-2.917 0-5.594 1.04-7.652 2.75L4.346 4.5z" /></svg>
+          </div>
+          <span class="font-mono font-bold text-white">QUANTIGRADE</span>
+        </div>
+        <p class="text-xs text-gray-500 leading-relaxed mb-4">Open Source enterprise compliance platform for DORA, NIS2, EU AI Act, CRA and RGPD.</p>
+        <p class="text-xs font-mono text-gray-600 italic">"Compliance is not a checkbox.<br/>It's an engineering discipline."</p>
+      </div>
+      <div>
+        <p class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-4">Repository</p>
+        <div class="space-y-2">
+          <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"><span class="text-cyan-DEFAULT">&rarr;</span> quantigrade-core</a>
+          <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/docs/adr/0001-record-architecture-decisions.md" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"><span class="text-cyan-DEFAULT">&rarr;</span> ADR-0001: API-First Architecture</a>
+          <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/docs/adr/0002-post-quantum-cryptography-standard.md" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"><span class="text-cyan-DEFAULT">&rarr;</span> ADR-0002: FIPS 204 ML-DSA</a>
+          <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/openapi.yaml" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"><span class="text-cyan-DEFAULT">&rarr;</span> OpenAPI 3.1 Specification</a>
+          <a href="https://github.com/Tardigrado-76/COMPLIANCE_MANAGER" target="_blank" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"><span class="text-cyan-DEFAULT">&rarr;</span> CISO Executive Report</a>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-4">Technical</p>
+        <div class="space-y-2 text-xs font-mono text-gray-600">
+          <div class="flex justify-between"><span>Python</span><span class="text-gray-500">&ge; 3.12</span></div>
+          <div class="flex justify-between"><span>FastAPI</span><span class="text-gray-500">&ge; 0.111</span></div>
+          <div class="flex justify-between"><span>Pydantic</span><span class="text-gray-500">v2</span></div>
+          <div class="flex justify-between"><span>OpenAPI</span><span class="text-gray-500">3.1.0</span></div>
+          <div class="flex justify-between"><span>ML-DSA</span><span class="text-gray-500">FIPS 204</span></div>
+          <div class="flex justify-between"><span>License</span><span class="text-cyan-DEFAULT">MIT</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="sep mb-6"></div>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-gray-600 font-mono">&copy; 2026 Tardigrado-76 / Quantigrade &middot; MIT License</p>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-DEFAULT animate-pulse"></span><span class="font-mono text-xs text-emerald-DEFAULT">All systems operational</span></div>
+        <span class="text-gray-700">&middot;</span>
+        <span class="font-mono text-xs text-gray-600">Build: <span class="text-cyan-DEFAULT" style="opacity:0.6;">v2.0.0</span></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+  var logLines = [
+    { time: '20:14:01', content: 'SBOM generated &middot; CycloneDX 1.6 &middot; 347 dependencies &middot; 0 KEV matches', type: 'ok' },
+    { time: '20:14:03', content: 'DORA Art.18 classification &middot; 3 RTS thresholds triggered &middot; CRITICAL', type: 'warn' },
+    { time: '20:14:04', content: 'PQC integrity verified &middot; ML-DSA-87 (FIPS 204) &middot; Merkle root: a7f3&hellip;c91d', type: 'ok' },
+    { time: '20:14:05', content: 'AI Act risk matrix &middot; High-risk system detected &middot; HITL override required', type: 'warn' },
+    { time: '20:14:06', content: 'RAG Guardrails &middot; OWASP LLM Top 10 scan &middot; Prompt injection: BLOCKED', type: 'ok' },
+    { time: '20:14:07', content: 'Audit complete &middot; 142 controls evaluated &middot; Report: REPORTS/CISO_EXEC.pdf', type: 'ok' }
+  ];
+  var logContainer = document.getElementById('log-lines');
+  var cursorEl = document.getElementById('terminal-cursor');
+  var lineIndex = 0;
+  var started = false;
+  function addLogLine(line) {
+    var symbol = line.type === 'ok' ? '&#10003;' : '&#9888;';
+    var cls = line.type === 'ok' ? 'log-ok' : 'log-warn';
+    var div = document.createElement('div');
+    div.className = 'flex items-start gap-2';
+    div.style.opacity = '0';
+    div.style.transition = 'opacity 0.3s ease';
+    div.innerHTML = '<span class="log-time shrink-0">[' + line.time + ']</span>' +
+      '<span class="log-bar shrink-0">&#9608;&#9608;</span>' +
+      '<span class="log-text flex-1">' + line.content + '</span>' +
+      '<span class="' + cls + ' shrink-0 ml-2">' + symbol + '</span>';
+    logContainer.appendChild(div);
+    requestAnimationFrame(function() { div.style.opacity = '1'; });
+  }
+  function typeNextLine() {
+    if (lineIndex < logLines.length) {
+      addLogLine(logLines[lineIndex]);
+      lineIndex++;
+      var delay = lineIndex === 1 ? 600 : 900 + Math.random() * 400;
+      setTimeout(typeNextLine, delay);
+    } else {
+      cursorEl.classList.remove('hidden');
+      setTimeout(function() {
+        logContainer.innerHTML = '';
+        cursorEl.classList.add('hidden');
+        lineIndex = 0;
+        setTimeout(typeNextLine, 800);
+      }, 8000);
+    }
+  }
+  var terminalEl = document.getElementById('terminal');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !started) {
+          started = true;
+          setTimeout(typeNextLine, 1200);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(terminalEl);
+  } else {
+    setTimeout(typeNextLine, 1200);
+  }
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    navbar.classList.toggle('nav-scrolled', window.scrollY > 20);
+  }, { passive: true });
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var t = document.querySelector(a.getAttribute('href'));
+      if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
+    });
+  });
+  var cards = document.querySelectorAll('.module-card, .metric-card');
+  if ('IntersectionObserver' in window) {
+    var cardObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry, i) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          setTimeout(function() { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, (i % 3) * 80);
+          cardObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach(function(card) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(16px)';
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s';
+      cardObs.observe(card);
+    });
+  }
+  var style = document.createElement('style');
+  style.textContent = '@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }';
+  document.head.appendChild(style);
+})();
+</script>
+</body>
+</html>
