@@ -86,6 +86,7 @@ no_implicit_reexport = true
 show_error_codes = true
 namespace_packages = true
 explicit_package_bases = true
+mypy_path = "src"
 
 [[tool.mypy.overrides]]
 module = ["redis.*", "structlog.*"]
