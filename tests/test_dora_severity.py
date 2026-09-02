@@ -41,9 +41,7 @@ def make_input(**kwargs: object) -> DORAIncidentInput:
 # Non-Major Incident
 # ---------------------------------------------------------------------------
 class TestNonMajorIncident:
-    def test_all_zeros_is_not_major(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_all_zeros_is_not_major(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input())
         assert not result.is_major_incident
         assert result.severity_level == SeverityLevel.LOW
@@ -68,16 +66,12 @@ class TestNonMajorIncident:
 # Quantitative Thresholds — RTS Art. 3
 # ---------------------------------------------------------------------------
 class TestQuantitativeThresholds:
-    def test_clients_threshold_triggers_major(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_clients_threshold_triggers_major(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(clients_affected=100_000))
         assert result.is_major_incident
         assert any("Clients affected" in t for t in result.triggered_thresholds)
 
-    def test_downtime_threshold_triggers_major(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_downtime_threshold_triggers_major(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(downtime_hours=2.0))
         assert result.is_major_incident
         assert any("Downtime" in t for t in result.triggered_thresholds)
@@ -108,16 +102,12 @@ class TestQuantitativeThresholds:
 # Qualitative Thresholds — RTS Art. 4
 # ---------------------------------------------------------------------------
 class TestQualitativeThresholds:
-    def test_critical_service_triggers_major(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_critical_service_triggers_major(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(affects_critical_service=True))
         assert result.is_major_incident
         assert any("critical" in t.lower() for t in result.triggered_thresholds)
 
-    def test_data_integrity_triggers_major(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_data_integrity_triggers_major(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(data_integrity_compromised=True))
         assert result.is_major_incident
         assert any("integrity" in t.lower() for t in result.triggered_thresholds)
@@ -127,9 +117,7 @@ class TestQualitativeThresholds:
 # Severity Level & Notification Deadlines
 # ---------------------------------------------------------------------------
 class TestSeverityAndDeadlines:
-    def test_critical_incident_has_2h_deadline(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_critical_incident_has_2h_deadline(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(
             make_input(
                 clients_affected=600_000,
@@ -142,9 +130,7 @@ class TestSeverityAndDeadlines:
         assert result.severity_level == SeverityLevel.CRITICAL
         assert result.notification_deadline_hours == 2
 
-    def test_high_severity_has_4h_deadline(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_high_severity_has_4h_deadline(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(
             make_input(
                 clients_affected=100_000,
@@ -154,9 +140,7 @@ class TestSeverityAndDeadlines:
         assert result.severity_level == SeverityLevel.HIGH
         assert result.notification_deadline_hours == 4
 
-    def test_critical_requires_three_reports(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_critical_requires_three_reports(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(
             make_input(
                 clients_affected=600_000,
@@ -170,9 +154,7 @@ class TestSeverityAndDeadlines:
         assert any("Intermediate" in r for r in result.required_reports)
         assert any("Final" in r for r in result.required_reports)
 
-    def test_low_major_requires_two_reports(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_low_major_requires_two_reports(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(downtime_hours=2.0))
         assert result.is_major_incident
         # medium severity — should include initial + final but not intermediate
@@ -183,9 +165,7 @@ class TestSeverityAndDeadlines:
 # Regulatory Reference
 # ---------------------------------------------------------------------------
 class TestRegulatoryReference:
-    def test_regulatory_reference_is_correct(
-        self, classifier: DORAIncidentClassifier
-    ) -> None:
+    def test_regulatory_reference_is_correct(self, classifier: DORAIncidentClassifier) -> None:
         result = classifier.classify(make_input(clients_affected=100_000))
         assert "DORA" in result.regulatory_reference
         assert "RTS EBA" in result.regulatory_reference

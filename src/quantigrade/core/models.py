@@ -34,9 +34,7 @@ class DORAIncidentInput(BaseModel):
     downtime_hours: Annotated[
         float, Field(ge=0.0, description="Service unavailability duration in hours")
     ]
-    economic_loss_eur: Annotated[
-        int, Field(ge=0, description="Estimated economic impact in EUR")
-    ]
+    economic_loss_eur: Annotated[int, Field(ge=0, description="Estimated economic impact in EUR")]
     eu_countries_affected: Annotated[
         int, Field(ge=1, le=27, description="Number of EU Member States impacted")
     ]
@@ -45,11 +43,10 @@ class DORAIncidentInput(BaseModel):
     ]
     data_integrity_compromised: Annotated[
         bool,
-        Field(description="Was data integrity or confidentiality impacted (potential breach)?")
+        Field(description="Was data integrity or confidentiality impacted (potential breach)?"),
     ]
     transaction_value_eur: Annotated[
-        int,
-        Field(ge=0, default=0, description="Value of affected transactions in EUR")
+        int, Field(ge=0, default=0, description="Value of affected transactions in EUR")
     ]
 
 
@@ -92,7 +89,7 @@ class PQCVerificationInput(BaseModel):
         Field(
             default="ML-DSA-87",
             pattern=r"^ML-DSA-(44|65|87)$",
-            description="FIPS 204 algorithm variant"
+            description="FIPS 204 algorithm variant",
         ),
     ]
 

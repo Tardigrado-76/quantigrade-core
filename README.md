@@ -72,7 +72,7 @@ input_data = DORAIncidentInput(
 classifier = DORAIncidentClassifier()
 result = classifier.classify(input_data)
 print(result.is_major_incident)  # True
-print(result.severity_level)     # "CRITICAL"
+print(result.severity_level)  # "CRITICAL"
 print(result.notification_deadline_hours)  # 2
 ```
 

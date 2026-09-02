@@ -87,14 +87,10 @@ class DORAIncidentClassifier:
 
         # --- Qualitative thresholds (RTS EBA Art. 4) ---
         if data.affects_critical_service:
-            triggered.append(
-                "Critical/essential function affected [RTS Art.4(a)]"
-            )
+            triggered.append("Critical/essential function affected [RTS Art.4(a)]")
 
         if data.data_integrity_compromised:
-            triggered.append(
-                "Data integrity or confidentiality compromised [RTS Art.4(b)]"
-            )
+            triggered.append("Data integrity or confidentiality compromised [RTS Art.4(b)]")
 
         is_major = len(triggered) > 0
         severity = self._compute_severity(data, triggered)
