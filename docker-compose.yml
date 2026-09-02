@@ -1,0 +1,94 @@
+version: "3.9"
+
+services:
+  # ---------------------------------------------------------------------------
+  # Quantigrade Core API — FastAPI
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: quantigrade-core:latest
+    container_name: quantigrade-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8501
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - quantigrade-net
+    labels:
+      - "com.quantigrade.service=api"
+      - "com.quantigrade.compliance=DORA,ENS,NIS2"
+
+  # ---------------------------------------------------------------------------
+  # Redis — Audit cache and rate limiting
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: quantigrade-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+      --requirepass "${REDIS_PASSWORD:-changeme_in_production}"
+    ports:
+      - "6379:6379"  # Only expose in dev; remove for production
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quantigrade-net
+    labels:
+      - "com.quantigrade.service=cache"
+
+  # ---------------------------------------------------------------------------
+  # Redis Commander — Admin UI (dev only, disable in production)
+  # ---------------------------------------------------------------------------
+  redis-ui:
+    image: rediscommander/redis-commander:latest
+    container_name: quantigrade-redis-ui
+    restart: unless-stopped
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-changeme_in_production}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - quantigrade-net
+    profiles:
+      - dev  # Only starts with: docker-compose --profile dev up
+
+volumes:
+  redis-data:
+    driver: local
+    labels:
+      com.quantigrade.volume: audit-cache
+
+networks:
+  quantigrade-net:
+    driver: bridge
+    labels:
+      com.quantigrade.network: internal
