@@ -1,0 +1,213 @@
+name: 🛡️ DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write  # for SARIF upload
+  checks: write
+
+env:
+  PYTHON_VERSION: "3.12"
+  MIN_COVERAGE: "80"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Static Analysis (Lint + Types)
+  # ---------------------------------------------------------------------------
+  lint-and-typecheck:
+    name: 🔍 Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Ruff linter
+        run: |
+          echo "::group::Ruff Lint Results"
+          ruff check src/ tests/ --output-format=github
+          echo "::endgroup::"
+
+      - name: Run Ruff formatter check
+        run: ruff format --check src/ tests/
+
+      - name: Run Mypy strict type checker
+        run: |
+          echo "::group::Mypy Type Check Results"
+          mypy src/quantigrade/ --strict --junit-xml=reports/mypy-results.xml || true
+          mypy src/quantigrade/ --strict
+          echo "::endgroup::"
+
+  # ---------------------------------------------------------------------------
+  # Job 2: SAST Security Audit (Bandit)
+  # ---------------------------------------------------------------------------
+  security-sast:
+    name: 🚫 SAST Security Audit
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install bandit
+        run: pip install bandit[toml]>=1.7.8
+
+      - name: Run Bandit SAST scanner
+        run: |
+          echo "::group::Bandit SAST Scan"
+          bandit -r src/ \
+            --configfile pyproject.toml \
+            --format json \
+            --output reports/bandit-report.json || true
+          bandit -r src/ \
+            --configfile pyproject.toml \
+            --severity-level medium \
+            --confidence-level medium
+          echo "::endgroup::"
+
+      - name: Upload Bandit report as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-sast-report
+          path: reports/bandit-report.json
+          retention-days: 30
+
+      - name: Fail on HIGH or CRITICAL vulnerabilities
+        run: |
+          bandit -r src/ \
+            --configfile pyproject.toml \
+            --severity-level high \
+            --confidence-level high
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Unit Tests + Coverage Gate
+  # ---------------------------------------------------------------------------
+  test-and-coverage:
+    name: ✅ Tests & Coverage
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run pytest with coverage
+        run: |
+          mkdir -p reports
+          pytest tests/ \
+            --cov=src/quantigrade \
+            --cov-report=term-missing \
+            --cov-report=xml:reports/coverage.xml \
+            --cov-report=html:reports/htmlcov \
+            --cov-fail-under=${{ env.MIN_COVERAGE }} \
+            --junit-xml=reports/pytest-results.xml \
+            -v
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-py${{ matrix.python-version }}
+          path: |
+            reports/coverage.xml
+            reports/htmlcov/
+          retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-py${{ matrix.python-version }}
+          path: reports/pytest-results.xml
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Job 4: Package Build & Integrity Verification
+  # ---------------------------------------------------------------------------
+  build-package:
+    name: 📦 Build Package
+    runs-on: ubuntu-latest
+    needs: [security-sast, test-and-coverage]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install build tools
+        run: pip install build hatchling
+
+      - name: Build package
+        run: python -m build --outdir dist/
+
+      - name: Verify package integrity
+        run: |
+          pip install twine
+          twine check dist/*
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Summary: All checks passed
+  # ---------------------------------------------------------------------------
+  devsecops-gate:
+    name: 🎉 DevSecOps Gate
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, security-sast, test-and-coverage, build-package]
+    if: always()
+    steps:
+      - name: Check all jobs succeeded
+        run: |
+          if [[ "${{ needs.lint-and-typecheck.result }}" != "success" ||
+                "${{ needs.security-sast.result }}" != "success" ||
+                "${{ needs.test-and-coverage.result }}" != "success" ||
+                "${{ needs.build-package.result }}" != "success" ]]; then
+            echo "❌ DevSecOps gate FAILED — one or more checks did not pass"
+            exit 1
+          fi
+          echo "✅ All DevSecOps checks passed — build is COMPLIANT"
