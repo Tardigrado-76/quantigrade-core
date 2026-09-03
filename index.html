@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantigrade Core | Enterprise Engineering Ecosystem & Technical Dashboard</title>
+    <title>Quantigrade Core | Enterprise Infrastructure & Compliance Dashboard</title>
     
-    <!-- Tailwind CSS (CDN standalone) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,21 +13,22 @@
             theme: {
                 extend: {
                     colors: {
-                        qg: {
-                            bg: '#090D16',
-                            panel: '#111827',
-                            border: '#1F2937',
+                        brand: {
+                            base: '#080C14',
+                            surface: '#0F172A',
+                            card: '#111C30',
+                            border: '#1E293B',
                             cyan: '#06B6D4',
-                            green: '#10B981',
+                            emerald: '#10B981',
                             amber: '#F59E0B',
-                            purple: '#8B5CF6',
-                            textmain: '#E5E7EB',
-                            textmuted: '#9CA3AF'
+                            purple: '#A855F7',
+                            muted: '#94A3B8',
+                            text: '#F8FAFC'
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
                     }
                 }
             }
@@ -40,323 +41,314 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            background-color: #090D16;
-            color: #E5E7EB;
-        }
-        
-        /* Sleek Technical Scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090D16; }
-        ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
-
-        .glass {
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background-color: #080C14;
+            color: #F8FAFC;
         }
 
-        .glass-card {
-            background: linear-gradient(180deg, rgba(17, 24, 39, 0.85) 0%, rgba(11, 16, 26, 0.9) 100%);
-            backdrop-filter: blur(12px);
-            border: 1px solid #1F2937;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #080C14; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid #1E293B;
         }
 
-        .glass-card:hover {
-            border-color: rgba(6, 182, 212, 0.4);
-            box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.15);
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.35);
         }
-        
-        /* Active Sidebar Link */
-        .nav-active {
+
+        .nav-item-active {
             border-left-color: #06B6D4 !important;
             color: #06B6D4 !important;
             background: rgba(6, 182, 212, 0.08);
         }
 
-        /* Typewriter Cursor */
-        .cursor::after {
+        .terminal-cursor::after {
             content: '█';
-            animation: blink 1s step-start infinite;
+            animation: pulse-cursor 1s step-start infinite;
             color: #06B6D4;
-            margin-left: 4px;
+            margin-left: 3px;
         }
-        @keyframes blink { 50% { opacity: 0; } }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
-        
-        .repo-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .repo-card.hidden-filter { display: none !important; }
+        @keyframes pulse-cursor { 50% { opacity: 0; } }
 
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(6px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        .pulse-glow {
+            box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.3);
         }
 
-        .perspective-1000 { perspective: 1000px; }
+        /* Modal backdrop transition */
+        .modal-enter { opacity: 0; transform: scale(0.96); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
     </style>
 </head>
-<body class="font-sans antialiased h-screen w-full flex flex-col md:flex-row overflow-hidden selection:bg-qg-cyan selection:text-black">
+<body class="font-sans antialiased h-screen w-full flex flex-col lg:flex-row overflow-hidden selection:bg-brand-cyan selection:text-black">
 
-    <!-- Mobile Header -->
-    <div class="md:hidden flex items-center justify-between p-4 border-b border-qg-border glass z-50">
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-qg-cyan/10 border border-qg-cyan/30 flex items-center justify-center text-qg-cyan">
-                <i data-lucide="shield-check" class="w-5 h-5"></i>
+    <!-- ========================================================================= -->
+    <!-- MOBILE TOP BAR (< lg) -->
+    <!-- ========================================================================= -->
+    <header class="lg:hidden flex items-center justify-between px-5 py-3.5 border-b border-brand-border bg-brand-base/95 backdrop-blur-md z-40">
+        <div class="logo-container flex items-center gap-2.5">
+            <!-- Quantum Node Vector Logo -->
+            <div class="relative w-7 h-7 flex-shrink-0">
+                <svg viewBox="0 0 40 40" fill="none" class="w-full h-full">
+                    <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="#1E293B" stroke-width="2" fill="#0B1120"/>
+                    <polygon points="20,7 31,14 31,26 20,33 9,26 9,14" stroke="#06B6D4" stroke-width="1.8" stroke-dasharray="2 2" fill="none"/>
+                    <circle cx="20" cy="20" r="4.5" fill="#06B6D4" class="animate-pulse"/>
+                    <circle cx="20" cy="7" r="2.5" fill="#10B981"/>
+                    <circle cx="31" cy="26" r="2.5" fill="#10B981"/>
+                    <circle cx="9" cy="26" r="2.5" fill="#10B981"/>
+                    <line x1="20" y1="20" x2="20" y2="7" stroke="#10B981" stroke-width="1.2"/>
+                    <line x1="20" y1="20" x2="31" y2="26" stroke="#10B981" stroke-width="1.2"/>
+                    <line x1="20" y1="20" x2="9" y2="26" stroke="#10B981" stroke-width="1.2"/>
+                </svg>
             </div>
             <div>
-                <h1 class="font-mono text-sm font-bold tracking-tight text-white">QUANTIGRADE</h1>
-                <p class="text-[10px] font-mono text-qg-green flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-qg-green animate-pulse"></span> 8 REPOS LIVE
-                </p>
+                <span class="font-mono text-sm font-bold tracking-tight text-white block">QUANTIGRADE</span>
+                <span class="text-[9px] font-mono text-brand-cyan block leading-none">CORE v2.0</span>
             </div>
         </div>
-        <button id="mobile-menu-btn" class="p-2 rounded-lg border border-qg-border bg-qg-panel text-qg-textmuted hover:text-white">
+
+        <button id="mobile-toggle-btn" class="p-2 rounded-lg border border-brand-border bg-brand-surface text-brand-muted hover:text-white" aria-label="Toggle Navigation">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-    </div>
+    </header>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="hidden fixed inset-0 bg-[#090D16]/95 backdrop-blur-xl z-40 p-6 pt-20 flex flex-col border-b border-qg-border overflow-y-auto">
-        <div class="mb-6 pb-4 border-b border-qg-border">
-            <span class="text-xs font-mono uppercase text-qg-cyan tracking-wider">Navigation Menu</span>
+    <!-- Mobile Drawer Overlay Backdrop -->
+    <div id="drawer-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
+
+    <!-- Mobile Drawer Content -->
+    <div id="mobile-drawer" class="fixed top-0 left-0 bottom-0 w-[80%] max-w-[320px] bg-brand-surface border-r border-brand-border z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col p-6 overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 mb-6 border-b border-brand-border">
+            <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6">
+                    <svg viewBox="0 0 40 40" fill="none" class="w-full h-full">
+                        <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="#06B6D4" stroke-width="2" fill="#0B1120"/>
+                        <circle cx="20" cy="20" r="4.5" fill="#10B981"/>
+                    </svg>
+                </div>
+                <span class="font-mono text-xs font-bold text-white uppercase tracking-wider">Quantigrade Core</span>
+            </div>
+            <button id="drawer-close-btn" class="text-brand-muted hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
         </div>
-        <nav class="space-y-4 font-mono text-sm mb-8">
-            <a href="#overview" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
+
+        <nav class="space-y-2 font-mono text-xs mb-8 flex-grow">
+            <a href="#overview" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
                 <i data-lucide="terminal" class="w-4 h-4"></i> 01. Overview
             </a>
-            <a href="#suite" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4"></i> 02. Engineering Suite
+            <a href="#architecture" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
+                <i data-lucide="git-fork" class="w-4 h-4"></i> 02. Architecture Flow
             </a>
-            <a href="#repos" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
-                <i data-lucide="folder-git-2" class="w-4 h-4 text-qg-cyan"></i> 03. Repositories Ecosystem (8)
+            <a href="#modules" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4"></i> 03. Engineering Modules
             </a>
-            <a href="#matrix" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
+            <a href="#matrix" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
                 <i data-lucide="table" class="w-4 h-4"></i> 04. Compliance Matrix
             </a>
-            <a href="#proof" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
-                <i data-lucide="file-code" class="w-4 h-4"></i> 05. Code & Architecture
+            <a href="#evidence" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> 05. Repository Evidence
             </a>
-            <a href="#architect" class="mobile-link block text-gray-300 hover:text-qg-cyan flex items-center gap-2">
+            <a href="#architect" class="drawer-link block py-2 px-3 rounded hover:bg-brand-border text-gray-300 hover:text-brand-cyan flex items-center gap-2">
                 <i data-lucide="user-check" class="w-4 h-4"></i> 06. Lead Architect
             </a>
         </nav>
-        <div class="mt-auto pt-6 border-t border-qg-border text-xs font-mono text-qg-textmuted">
-            <p class="text-qg-green flex items-center gap-1.5 mb-2">
-                <span class="w-2 h-2 rounded-full bg-qg-green animate-pulse"></span> CI/CD Verified: 8 Active Repos
-            </p>
-            <a href="https://github.com/Tardigrado-76" target="_blank" class="text-qg-cyan flex items-center gap-1 hover:underline">
-                <i data-lucide="github" class="w-3.5 h-3.5"></i> github.com/Tardigrado-76
+
+        <div class="pt-4 border-t border-brand-border text-[11px] font-mono text-brand-muted">
+            <div class="flex items-center gap-2 text-brand-emerald mb-2">
+                <span class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse"></span>
+                <span>CI/CD PASSING: 100%</span>
+            </div>
+            <a href="https://github.com/tardigrado-76/quantigrade-core" target="_blank" class="text-brand-cyan hover:underline flex items-center gap-1.5">
+                <i data-lucide="github" class="w-3.5 h-3.5"></i> tardigrado-76/quantigrade-core
             </a>
         </div>
     </div>
 
-    <!-- Left Column: Sidebar / Control Panel (30% desktop) -->
-    <aside class="hidden md:flex w-[32%] xl:w-[28%] max-w-[360px] flex-col h-full border-r border-qg-border bg-[#0B101A] p-6 z-10 overflow-y-auto select-none">
+    <!-- ========================================================================= -->
+    <!-- DESKTOP SIDEBAR / CONTROL PANEL (lg: 28% width, Sticky/Fixed) -->
+    <!-- ========================================================================= -->
+    <aside class="hidden lg:flex lg:w-[28%] max-w-[360px] flex-col h-full border-r border-brand-border bg-brand-surface/90 p-6 z-20 overflow-y-auto select-none">
         
-        <!-- Logo & Status -->
-        <div class="mb-8">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-lg bg-qg-cyan/10 border border-qg-cyan/30 flex items-center justify-center text-qg-cyan shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+        <!-- Brand & Custom Cryptographic Node Logo -->
+        <div class="mb-7">
+            <div class="logo-container flex items-center gap-3 mb-3">
+                <div class="relative w-9 h-9 flex-shrink-0">
+                    <svg viewBox="0 0 40 40" fill="none" class="w-full h-full drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
+                        <!-- Hexagonal Perimeter (Zero-Trust Outer Boundary) -->
+                        <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="#1E293B" stroke-width="2" fill="#0A0F1D"/>
+                        <polygon points="20,6 32,13 32,27 20,34 8,27 8,13" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
+                        <!-- Internal Lattice Cryptographic Vertex Nodes -->
+                        <line x1="20" y1="20" x2="20" y2="6" stroke="#10B981" stroke-width="1.2"/>
+                        <line x1="20" y1="20" x2="32" y2="27" stroke="#10B981" stroke-width="1.2"/>
+                        <line x1="20" y1="20" x2="8" y2="27" stroke="#10B981" stroke-width="1.2"/>
+                        <!-- Central Invariant Anchor -->
+                        <circle cx="20" cy="20" r="4.5" fill="#06B6D4"/>
+                        <circle cx="20" cy="20" r="8" stroke="#06B6D4" stroke-width="0.8" opacity="0.5"/>
+                        <!-- Outer Quantum Leaf Keys -->
+                        <circle cx="20" cy="6" r="2.5" fill="#10B981"/>
+                        <circle cx="32" cy="27" r="2.5" fill="#10B981"/>
+                        <circle cx="8" cy="27" r="2.5" fill="#10B981"/>
+                    </svg>
                 </div>
                 <div>
-                    <h1 class="font-mono text-base xl:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-                        QUANTIGRADE
+                    <h1 class="font-mono text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+                        QUANTIGRADE <span class="text-brand-cyan text-xs font-normal">CORE</span>
                     </h1>
-                    <p class="text-[11px] font-mono text-qg-textmuted">Deep-Tech & GRC Ecosystem</p>
+                    <span class="text-[10px] font-mono text-brand-muted uppercase tracking-wider block">Compliance-as-Code OS</span>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-1.5">
-                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green font-mono text-[10px] uppercase font-semibold">
-                    <div class="w-1.5 h-1.5 rounded-full bg-qg-green animate-pulse"></div>
-                    CI/CD PASSING (100%)
-                </div>
-                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-qg-cyan/30 bg-qg-cyan/10 text-qg-cyan font-mono text-[10px] uppercase font-semibold">
-                    <i data-lucide="git-branch" class="w-3 h-3"></i>
-                    8 REPOSITORIES SYNCHRONIZED
-                </div>
+            <!-- CI/CD Status Badge -->
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald font-mono text-[10px] uppercase font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-emerald animate-pulse"></span>
+                <span>● CI/CD PASSING (100%)</span>
             </div>
         </div>
 
-        <!-- Navigation Menu -->
+        <!-- Navigation Matrix -->
         <div class="mb-2">
-            <span class="text-[10px] font-mono uppercase text-gray-500 tracking-wider font-semibold">Navigation Matrix</span>
+            <span class="text-[10px] font-mono uppercase text-gray-500 tracking-wider font-semibold">Inspector Hierarchy</span>
         </div>
-        <nav class="space-y-1 mb-8 font-mono text-xs xl:text-sm flex-grow" id="nav-menu">
-            <a href="#overview" class="nav-link nav-active block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
+        <nav class="space-y-1 mb-6 font-mono text-xs flex-grow" id="desktop-nav">
+            <a href="#overview" class="nav-link nav-item-active block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
                 <span class="flex items-center gap-2"><i data-lucide="terminal" class="w-3.5 h-3.5"></i> 01. Overview</span>
-                <span class="text-[10px] text-gray-500 font-mono">EXEC</span>
+                <span class="text-[9px] text-gray-500 font-mono">HERO</span>
             </a>
-            <a href="#suite" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
-                <span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5"></i> 02. Engineering Suite</span>
-                <span class="text-[10px] text-gray-500 font-mono">6 MOD</span>
+            <a href="#architecture" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
+                <span class="flex items-center gap-2"><i data-lucide="git-fork" class="w-3.5 h-3.5"></i> 02. Architecture Flow</span>
+                <span class="text-[9px] text-gray-500 font-mono">SVG/DATA</span>
             </a>
-            <a href="#repos" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
-                <span class="flex items-center gap-2"><i data-lucide="folder-git-2" class="w-3.5 h-3.5 text-qg-cyan"></i> 03. Repositories</span>
-                <span class="px-1.5 py-0.2 rounded bg-qg-cyan/20 text-qg-cyan text-[10px] font-mono font-bold">8 REPOS</span>
+            <a href="#modules" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
+                <span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5"></i> 03. Engineering Modules</span>
+                <span class="text-[9px] text-brand-cyan font-mono">6 SPECS</span>
             </a>
-            <a href="#matrix" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
+            <a href="#matrix" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
                 <span class="flex items-center gap-2"><i data-lucide="table" class="w-3.5 h-3.5"></i> 04. Compliance Matrix</span>
-                <span class="text-[10px] text-gray-500 font-mono">DORA/NIS2</span>
+                <span class="text-[9px] text-gray-500 font-mono">DORA/AI</span>
             </a>
-            <a href="#proof" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
-                <span class="flex items-center gap-2"><i data-lucide="file-code" class="w-3.5 h-3.5"></i> 05. Code & Architecture</span>
-                <span class="text-[10px] text-gray-500 font-mono">EVIDENCE</span>
+            <a href="#evidence" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
+                <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 05. Repository Evidence</span>
+                <span class="text-[9px] text-gray-500 font-mono">AUDIT</span>
             </a>
-            <a href="#architect" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-qg-textmuted hover:text-white rounded-r transition-colors flex items-center justify-between">
+            <a href="#architect" class="nav-link block py-2.5 px-3.5 border-l-2 border-transparent text-brand-muted hover:text-white rounded-r transition-colors flex items-center justify-between">
                 <span class="flex items-center gap-2"><i data-lucide="user-check" class="w-3.5 h-3.5"></i> 06. Lead Architect</span>
-                <span class="text-[10px] text-gray-500 font-mono">C-LEVEL</span>
+                <span class="text-[9px] text-gray-500 font-mono">CISO</span>
             </a>
         </nav>
 
-        <!-- Real-Time Metrics -->
-        <div class="p-3.5 rounded-lg bg-qg-bg border border-qg-border mb-6 space-y-2.5">
-            <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono uppercase text-gray-400 font-semibold flex items-center gap-1.5">
-                    <i data-lucide="activity" class="w-3 h-3 text-qg-cyan"></i> System Telemetry
-                </span>
-                <span class="text-[9px] font-mono text-qg-green bg-qg-green/10 px-1.5 py-0.5 rounded">STABLE</span>
-            </div>
-            <div class="flex justify-between items-center text-[11px] font-mono border-t border-qg-border/60 pt-2">
-                <span class="text-qg-textmuted">Test Coverage:</span>
-                <span class="text-qg-green font-bold">98.4% (24/24 PASS)</span>
-            </div>
-            <div class="flex justify-between items-center text-[11px] font-mono">
-                <span class="text-qg-textmuted">Static Analysis (SAST):</span>
-                <span class="text-qg-cyan font-bold">0 Critical / 0 High</span>
-            </div>
-            <div class="flex justify-between items-center text-[11px] font-mono">
-                <span class="text-qg-textmuted">Type Safety (Mypy):</span>
-                <span class="text-white font-bold">100% Strict Mode</span>
-            </div>
-            <div class="flex justify-between items-center text-[11px] font-mono">
-                <span class="text-qg-textmuted">Ecosystem Repos:</span>
-                <span class="text-qg-cyan font-bold">8 Public Repositories</span>
-            </div>
-        </div>
-
-        <!-- Quick Repositories Shortcuts -->
-        <div class="space-y-1.5 pt-2 border-t border-qg-border">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-mono uppercase text-gray-400 font-semibold">Fast Repo Jump</span>
-                <a href="https://github.com/Tardigrado-76" target="_blank" class="text-[10px] font-mono text-qg-cyan hover:underline flex items-center gap-1">
-                    All <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-                </a>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
-                <a href="#repo-quantigrade-core" class="px-2 py-1.5 rounded bg-qg-panel border border-qg-border/80 hover:border-qg-cyan text-gray-300 truncate flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-qg-green"></span> quantigrade-core
-                </a>
-                <a href="#repo-enterprise-grc-platform" class="px-2 py-1.5 rounded bg-qg-panel border border-qg-border/80 hover:border-qg-cyan text-gray-300 truncate flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-qg-cyan"></span> enterprise-grc
-                </a>
-                <a href="#repo-horizont-2035" class="px-2 py-1.5 rounded bg-qg-panel border border-qg-border/80 hover:border-qg-cyan text-gray-300 truncate flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> horizont-2035
-                </a>
-                <a href="#repo-langgraph-agent" class="px-2 py-1.5 rounded bg-qg-panel border border-qg-border/80 hover:border-qg-cyan text-gray-300 truncate flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> langgraph-agent
-                </a>
+        <!-- Live Telemetry Mini-Cards (Real Metrics) -->
+        <div class="mb-6 space-y-2">
+            <span class="text-[10px] font-mono uppercase text-gray-500 tracking-wider font-semibold block">Live Telemetry</span>
+            <div class="grid grid-cols-3 gap-2">
+                <!-- Metric 1: Coverage -->
+                <div class="p-2 rounded bg-brand-base border border-brand-border">
+                    <span class="text-[9px] font-mono text-brand-muted block">Pytest</span>
+                    <span class="font-mono text-xs font-bold text-brand-emerald block">98%</span>
+                    <span class="text-[8px] font-mono text-gray-500 block truncate">24/24 PASS</span>
+                </div>
+                <!-- Metric 2: SAST -->
+                <div class="p-2 rounded bg-brand-base border border-brand-border">
+                    <span class="text-[9px] font-mono text-brand-muted block">Bandit</span>
+                    <span class="font-mono text-xs font-bold text-brand-cyan block">0 Flaws</span>
+                    <span class="text-[8px] font-mono text-gray-500 block truncate">Grade A+</span>
+                </div>
+                <!-- Metric 3: Mypy -->
+                <div class="p-2 rounded bg-brand-base border border-brand-border">
+                    <span class="text-[9px] font-mono text-brand-muted block">Mypy</span>
+                    <span class="font-mono text-xs font-bold text-white block">Strict</span>
+                    <span class="text-[8px] font-mono text-gray-500 block truncate">100% Typed</span>
+                </div>
             </div>
         </div>
 
-        <!-- Direct Git Links -->
-        <div class="space-y-1.5 mt-4 pt-3 border-t border-qg-border text-[11px] font-mono text-qg-textmuted">
-            <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml" target="_blank" class="flex items-center gap-2 hover:text-qg-cyan transition-colors">
-                <i data-lucide="git-pull-request" class="w-3 h-3"></i> .github/workflows/ci.yml
+        <!-- Quick Repository Artifact Links -->
+        <div class="space-y-1.5 pt-3 border-t border-brand-border text-[11px] font-mono text-brand-muted">
+            <span class="text-[10px] font-mono uppercase text-gray-500 tracking-wider font-semibold block mb-1">Public Verified Sources</span>
+            <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml" target="_blank" class="flex items-center gap-2 hover:text-brand-cyan transition-colors">
+                <i data-lucide="git-pull-request" class="w-3 h-3 text-brand-cyan"></i>
+                <span class="truncate">.github/workflows/ci.yml</span>
             </a>
-            <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/openapi.yaml" target="_blank" class="flex items-center gap-2 hover:text-qg-cyan transition-colors">
-                <i data-lucide="file-json" class="w-3 h-3"></i> openapi.yaml (v3.1)
+            <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/pyproject.toml" target="_blank" class="flex items-center gap-2 hover:text-brand-cyan transition-colors">
+                <i data-lucide="file-code" class="w-3 h-3 text-brand-cyan"></i>
+                <span class="truncate">pyproject.toml (Strict)</span>
             </a>
-            <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="flex items-center gap-2 hover:text-qg-cyan transition-colors">
-                <i data-lucide="terminal" class="w-3 h-3"></i> dora_severity.py (RTS EBA)
+            <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/openapi.yaml" target="_blank" class="flex items-center gap-2 hover:text-brand-cyan transition-colors">
+                <i data-lucide="file-json" class="w-3 h-3 text-brand-cyan"></i>
+                <span class="truncate">openapi.yaml (Spec 3.1)</span>
             </a>
         </div>
     </aside>
 
-    <!-- Right Column: Main Active Inspector (70% desktop) -->
-    <main class="flex-1 h-full overflow-y-auto scroll-smooth p-6 md:p-10 xl:p-14 relative" id="main-content">
+    <!-- ========================================================================= -->
+    <!-- MAIN INSPECTOR (lg: 72% width, Independent Scrolling) -->
+    <!-- ========================================================================= -->
+    <main class="flex-1 h-full overflow-y-auto scroll-smooth p-6 md:p-10 xl:p-12 relative" id="main-inspector">
         
-        <!-- Ambient lighting glow -->
-        <div class="absolute top-0 right-0 w-[550px] h-[550px] bg-qg-cyan/5 rounded-full blur-[120px] -z-10 pointer-events-none mix-blend-screen"></div>
-        <div class="absolute top-[40%] left-0 w-[450px] h-[450px] bg-purple-500/5 rounded-full blur-[140px] -z-10 pointer-events-none mix-blend-screen"></div>
+        <!-- Ambient Background Glows -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-cyan/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+        <div class="absolute top-[45%] left-0 w-[400px] h-[400px] bg-brand-purple/5 rounded-full blur-[140px] -z-10 pointer-events-none"></div>
 
-        <!-- ========================================================================= -->
-        <!-- 01. HERO / OVERVIEW SECTION -->
-        <!-- ========================================================================= -->
-        <section id="overview" class="min-h-[85vh] flex flex-col justify-center mb-24 pt-2 scroll-mt-8">
-            <div class="grid grid-cols-1 2xl:grid-cols-12 gap-10 items-center">
+        <!-- ===================================================================== -->
+        <!-- 01. HERO / OVERVIEW & INTERACTIVE TERMINAL -->
+        <!-- ===================================================================== -->
+        <section id="overview" class="min-h-[80vh] flex flex-col justify-center mb-24 pt-2 scroll-mt-6">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
                 
-                <!-- Left Subcolumn: Executive Pitch -->
-                <div class="2xl:col-span-6 space-y-6 max-w-2xl">
-                    <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full border border-qg-border bg-qg-panel/80 text-qg-textmuted font-mono text-xs shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-qg-cyan animate-pulse"></span>
-                        <span>Enterprise GRC & Deep-Tech Architecture</span>
+                <!-- Hero Pitch Left -->
+                <div class="xl:col-span-6 space-y-5 max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-border bg-brand-surface text-brand-muted font-mono text-xs">
+                        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+                        <span>FIPS 204 Ready • DORA / EU AI Act Invariants</span>
                     </div>
 
-                    <h2 class="text-3xl md:text-5xl font-bold leading-[1.12] tracking-tight text-white">
+                    <h2 class="text-3xl sm:text-4xl xl:text-5xl font-bold leading-[1.1] tracking-tight text-white">
                         Compliance-as-Code.<br/>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-qg-cyan via-teal-300 to-qg-green">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-teal-300 to-brand-emerald">
                             Post-Quantum Resilience.
                         </span>
                     </h2>
 
-                    <p class="text-qg-textmuted text-base md:text-lg leading-relaxed">
-                        Quantigrade is an enterprise-grade ecosystem engineered to translate European digital regulations (<span class="text-white font-semibold">DORA, NIS2, EU AI Act, CRA, ENS</span>) into deterministic, automated CI/CD assertions and cryptographic proofs.
+                    <p class="text-brand-muted text-sm sm:text-base leading-relaxed">
+                        Quantigrade Core bridges the gap between rigid European legislative mandates (<strong class="text-white">DORA, NIS2, EU AI Act, CRA</strong>) and cloud-native velocity through deterministic CI/CD assertions and tamper-evident Merkle ledger proofs.
                     </p>
 
-                    <!-- Key highlights bar -->
-                    <div class="grid grid-cols-3 gap-3 pt-1">
-                        <div class="p-3 rounded-lg bg-qg-panel/60 border border-qg-border">
-                            <div class="text-xs font-mono text-qg-cyan font-bold">FIPS 204</div>
-                            <div class="text-[11px] text-qg-textmuted">ML-DSA / ML-KEM</div>
-                        </div>
-                        <div class="p-3 rounded-lg bg-qg-panel/60 border border-qg-border">
-                            <div class="text-xs font-mono text-qg-green font-bold">MERKLE TREE</div>
-                            <div class="text-[11px] text-qg-textmuted">SHA-256 Immutability</div>
-                        </div>
-                        <div class="p-3 rounded-lg bg-qg-panel/60 border border-qg-border">
-                            <div class="text-xs font-mono text-purple-400 font-bold">CYCLONEDX</div>
-                            <div class="text-[11px] text-qg-textmuted">v1.6 Signed SBOMs</div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-wrap gap-4 pt-3">
-                        <a href="#repos" class="px-5 py-2.5 bg-qg-cyan text-black font-mono text-xs md:text-sm font-bold rounded-lg hover:bg-cyan-400 transition-colors shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-2">
-                            <i data-lucide="folder-git-2" class="w-4 h-4"></i> Explore 8 Repositories
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="#modules" class="px-5 py-2.5 bg-brand-cyan text-black font-mono text-xs sm:text-sm font-bold rounded-lg hover:bg-cyan-400 transition-colors shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4"></i> Inspect 6 Modules
                         </a>
-                        <a href="https://github.com/Tardigrado-76" target="_blank" class="px-5 py-2.5 bg-qg-panel border border-qg-border text-white font-mono text-xs md:text-sm rounded-lg hover:border-qg-cyan transition-colors flex items-center gap-2">
-                            <i data-lucide="github" class="w-4 h-4"></i> GitHub Portfolio
+                        <a href="https://github.com/tardigrado-76/quantigrade-core" target="_blank" class="px-5 py-2.5 bg-brand-surface border border-brand-border text-white font-mono text-xs sm:text-sm rounded-lg hover:border-brand-cyan transition-colors flex items-center gap-2">
+                            <i data-lucide="github" class="w-4 h-4"></i> View GitHub Source
                         </a>
                     </div>
                 </div>
 
-                <!-- Right Subcolumn: Live Simulated Terminal -->
-                <div class="2xl:col-span-6 w-full">
-                    <div class="bg-[#0D1117] border border-[#30363D] rounded-xl overflow-hidden shadow-2xl">
-                        <!-- Terminal Header Bar -->
-                        <div class="bg-[#161B22] border-b border-[#30363D] px-4 py-2.5 flex items-center justify-between">
+                <!-- Interactive JS Terminal Right -->
+                <div class="xl:col-span-6 w-full">
+                    <div class="bg-[#0B0F19] border border-brand-border rounded-xl overflow-hidden shadow-2xl">
+                        <!-- Terminal Topbar -->
+                        <div class="bg-brand-surface px-4 py-2.5 border-b border-brand-border flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
-                                <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
-                                <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
-                                <span class="ml-2 text-[11px] font-mono text-[#8B949E] flex items-center gap-1.5">
-                                    <i data-lucide="terminal" class="w-3 h-3 text-qg-cyan"></i> quantigrade-orchestrator ~ audit-cluster
-                                </span>
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                                <span class="ml-2 font-mono text-[11px] text-gray-400">quantigrade-cli ~ audit-daemon</span>
                             </div>
-                            <span class="text-[9px] font-mono text-qg-green bg-qg-green/10 border border-qg-green/30 px-2 py-0.5 rounded">
-                                LIVE PIPELINE
-                            </span>
+                            <button id="terminal-replay-btn" class="px-2 py-0.5 rounded text-[10px] font-mono text-brand-cyan bg-brand-cyan/10 hover:bg-brand-cyan/20 border border-brand-cyan/30 flex items-center gap-1 transition-colors" title="Re-run terminal verification simulation">
+                                <i data-lucide="rotate-cw" class="w-3 h-3"></i> Replay Scan
+                            </button>
                         </div>
-                        <!-- Terminal Screen -->
-                        <div class="p-5 font-mono text-xs text-gray-300 h-[310px] overflow-y-auto leading-relaxed" id="terminal-content">
-                            <!-- Injected dynamically via typewriter JS -->
+                        <!-- Terminal Log Stream -->
+                        <div class="p-5 font-mono text-xs text-gray-300 h-[290px] overflow-y-auto leading-relaxed" id="terminal-screen">
+                            <!-- Injected by TypeWriter JS -->
                         </div>
                     </div>
                 </div>
@@ -364,918 +356,578 @@
             </div>
         </section>
 
-        <div class="h-px w-full bg-gradient-to-r from-qg-border via-qg-cyan/25 to-transparent mb-24"></div>
+        <div class="h-px w-full bg-gradient-to-r from-brand-border via-brand-cyan/20 to-transparent mb-20"></div>
 
-        <!-- ========================================================================= -->
-        <!-- 02. ENGINEERING SUITE (THE 6 MODULES) -->
-        <!-- ========================================================================= -->
-        <section id="suite" class="mb-32 scroll-mt-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-                <div>
-                    <h2 class="font-mono text-qg-cyan text-xs tracking-widest uppercase mb-2.5 flex items-center gap-2">
-                        <i data-lucide="layers" class="w-4 h-4"></i> 02. Engineering Suite
-                    </h2>
-                    <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Technical Enforcement Modules</h3>
-                </div>
-                <p class="text-xs font-mono text-qg-textmuted">Deterministic controls • Zero ad-hoc compliance</p>
+        <!-- ===================================================================== -->
+        <!-- 02. ARCHITECTURE FLOW DIAGRAM (CSS/SVG DATA PIPELINE) -->
+        <!-- ===================================================================== -->
+        <section id="architecture" class="mb-28 scroll-mt-6">
+            <div class="mb-8">
+                <h2 class="font-mono text-brand-cyan text-xs tracking-widest uppercase mb-2 flex items-center gap-2">
+                    <i data-lucide="git-fork" class="w-4 h-4"></i> 02. Architecture Diagram
+                </h2>
+                <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">End-to-End Cryptographic Data Pipeline</h3>
+                <p class="text-xs font-mono text-brand-muted mt-1">Interactive Pipeline: Click any stage to inspect RFC protocols and deterministic security invariants.</p>
             </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Module 1: DORA Engine -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-qg-cyan/10 border border-qg-cyan/30 text-qg-cyan">
-                                <i data-lucide="activity" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-qg-cyan transition-colors">DORA Resilience Engine</h4>
-                                <span class="text-[11px] font-mono text-gray-400">RTS EBA / EIOPA / ESMA Enforcement</span>
-                            </div>
+
+            <!-- Flow Visualizer -->
+            <div class="glass-panel p-6 rounded-xl overflow-x-auto">
+                <div class="min-w-[700px] flex items-center justify-between relative py-6">
+                    
+                    <!-- Connector Baseline -->
+                    <div class="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-[2px] bg-brand-border z-0"></div>
+                    <div class="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-[2px] bg-gradient-to-r from-brand-cyan via-brand-purple to-brand-emerald z-0 opacity-40"></div>
+
+                    <!-- Step 1: Client API Request -->
+                    <div class="flow-step relative z-10 cursor-pointer group" data-step="1">
+                        <div class="w-14 h-14 rounded-xl bg-brand-base border-2 border-brand-cyan/80 flex items-center justify-center text-brand-cyan group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
+                            <i data-lucide="globe" class="w-6 h-6"></i>
                         </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
+                        <span class="font-mono text-[11px] text-white block text-center mt-2 font-semibold">1. Client API</span>
+                        <span class="font-mono text-[9px] text-brand-muted block text-center">FastAPI Ingest</span>
                     </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Programmatically computes ICT incident impact, classification thresholds, and multi-vendor supply chain dependencies. Integrates directly into FastAPI endpoints with strict Pydantic v2 schemas.
-                    </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Core: <code class="text-qg-cyan">quantigrade.core.dora_severity</code></span>
-                        <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="text-qg-cyan hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Code <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
+
+                    <!-- Step 2: mTLS / Zero Trust Gate -->
+                    <div class="flow-step relative z-10 cursor-pointer group" data-step="2">
+                        <div class="w-14 h-14 rounded-xl bg-brand-base border-2 border-brand-border group-hover:border-brand-cyan flex items-center justify-center text-gray-300 group-hover:text-brand-cyan group-hover:scale-105 transition-all">
+                            <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-[11px] text-white block text-center mt-2 font-semibold">2. Zero-Trust Gate</span>
+                        <span class="font-mono text-[9px] text-brand-muted block text-center">mTLS / SPIFFE</span>
                     </div>
+
+                    <!-- Step 3: EU AI Act Guardrails -->
+                    <div class="flow-step relative z-10 cursor-pointer group" data-step="3">
+                        <div class="w-14 h-14 rounded-xl bg-brand-base border-2 border-brand-border group-hover:border-brand-purple flex items-center justify-center text-gray-300 group-hover:text-brand-purple group-hover:scale-105 transition-all">
+                            <i data-lucide="cpu" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-[11px] text-white block text-center mt-2 font-semibold">3. AI Guardrails</span>
+                        <span class="font-mono text-[9px] text-brand-muted block text-center">MCP / Model Interceptor</span>
+                    </div>
+
+                    <!-- Step 4: Merkle Tree Ledger -->
+                    <div class="flow-step relative z-10 cursor-pointer group" data-step="4">
+                        <div class="w-14 h-14 rounded-xl bg-brand-base border-2 border-brand-border group-hover:border-brand-cyan flex items-center justify-center text-gray-300 group-hover:text-brand-cyan group-hover:scale-105 transition-all">
+                            <i data-lucide="git-commit" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-[11px] text-white block text-center mt-2 font-semibold">4. Merkle Ledger</span>
+                        <span class="font-mono text-[9px] text-brand-muted block text-center">SHA-256 Chain</span>
+                    </div>
+
+                    <!-- Step 5: PQC Log Sign -->
+                    <div class="flow-step relative z-10 cursor-pointer group" data-step="5">
+                        <div class="w-14 h-14 rounded-xl bg-brand-base border-2 border-brand-emerald flex items-center justify-center text-brand-emerald group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
+                            <i data-lucide="key" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-[11px] text-white block text-center mt-2 font-semibold">5. PQC Signature</span>
+                        <span class="font-mono text-[9px] text-brand-muted block text-center">FIPS 204 (ML-DSA)</span>
+                    </div>
+
                 </div>
 
-                <!-- Module 2: Post-Quantum Crypto -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400">
-                                <i data-lucide="lock" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-purple-400 transition-colors">Post-Quantum Cryptography</h4>
-                                <span class="text-[11px] font-mono text-gray-400">FIPS 204 (ML-DSA) & FIPS 203 (ML-KEM)</span>
-                            </div>
+                <!-- Dynamic Step Inspector Box -->
+                <div id="flow-details-card" class="mt-4 p-4 rounded-lg bg-brand-base border border-brand-border font-mono text-xs">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-brand-border">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-cyan"></span>
+                            <strong id="flow-step-title" class="text-brand-cyan">Stage 1: Client API Request Ingestion</strong>
                         </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
+                        <span id="flow-step-standard" class="text-[10px] text-brand-muted px-2 py-0.5 rounded bg-brand-surface border border-brand-border">RFC 9110 / HTTP/3</span>
                     </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Protects enterprise communications against "Harvest Now, Decrypt Later" (HNDL) attacks. Employs lattice-based cryptography standards ratified by NIST and orchestrates hybrid TLS transitions.
+                    <p id="flow-step-desc" class="text-gray-300 text-[11px] leading-relaxed">
+                        API requests enter through a hardened FastAPI gateway with strictly typed Pydantic v2 schemas. Headers are evaluated for deterministic execution traces before downstream traversal.
                     </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Standard: <code class="text-purple-400">ADR-0002 NIST PQC</code></span>
-                        <a href="https://github.com/Tardigrado-76/horizont-2035" target="_blank" class="text-purple-400 hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Repo <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
                 </div>
-
-                <!-- Module 3: EU AI Act Guardrails -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400">
-                                <i data-lucide="cpu" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-blue-400 transition-colors">EU AI Act Guardrails</h4>
-                                <span class="text-[11px] font-mono text-gray-400">Model Context Protocol (MCP) Runtime</span>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Continuous telemetry for High-Risk AI systems (Articles 9, 12, 14, 15). Deterministic output verification, prompt injection firewalling, and immutable inference audit logs through LangGraph multi-agent architectures.
-                    </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Orchestrator: <code class="text-blue-400">LangGraph & MCP</code></span>
-                        <a href="https://github.com/Tardigrado-76/langgraph-agent" target="_blank" class="text-blue-400 hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Agent <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Module 4: CRA Supply Chain -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
-                                <i data-lucide="box" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">CRA Supply Chain & SBOM</h4>
-                                <span class="text-[11px] font-mono text-gray-400">CycloneDX 1.6 & CISA KEV Interceptor</span>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Zero-trust dependency validation. Every container artifact generates an in-toto attestation and signed CycloneDX 1.6 SBOM, halting deployment automatically on unpatched CVEs.
-                    </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Attestation: <code class="text-amber-400">SLSA Level 3+</code></span>
-                        <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml" target="_blank" class="text-amber-400 hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Pipeline <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Module 5: Merkle Immutability -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-qg-cyan/10 border border-qg-cyan/30 text-qg-cyan">
-                                <i data-lucide="git-commit" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-qg-cyan transition-colors">Merkle Tree Immutability</h4>
-                                <span class="text-[11px] font-mono text-gray-400">Cryptographic Chain of Custody</span>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Constructs incremental SHA-256 Merkle trees across all system configuration changes and compliance calculations. Provides mathematically verifiable proofs for external judicial or supervisory audits.
-                    </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Algorithm: <code class="text-qg-cyan">SHA-256 Merkle Root</code></span>
-                        <a href="https://github.com/Tardigrado-76/enterprise-grc-platform" target="_blank" class="text-qg-cyan hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Platform <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Module 6: OS Hardening -->
-                <div class="glass-card p-6 rounded-xl relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 rounded-lg bg-qg-green/10 border border-qg-green/30 text-qg-green">
-                                <i data-lucide="shield-alert" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-white group-hover:text-qg-green transition-colors">CCN-CERT OS Hardening</h4>
-                                <span class="text-[11px] font-mono text-gray-400">Esquema Nacional de Seguridad (ENS)</span>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-0.5 rounded border border-qg-green/30 bg-qg-green/10 text-qg-green text-[10px] font-mono font-semibold">Active</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-qg-textmuted mb-4 leading-relaxed">
-                        Automated remediation aligning Linux/Windows workloads with CCN-CERT CLARA guidelines and CIS Benchmarks. Enforces least-privilege, kernel auditing, and ephemeral secure baselines.
-                    </p>
-                    <div class="flex items-center justify-between pt-2 border-t border-qg-border text-xs font-mono">
-                        <span class="text-gray-400">Suite: <code class="text-qg-green">clara-fix-tools</code></span>
-                        <a href="https://github.com/Tardigrado-76/clara-fix-tools" target="_blank" class="text-qg-green hover:text-white flex items-center gap-1 transition-colors">
-                            Inspect Tools <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </section>
 
-        <div class="h-px w-full bg-gradient-to-r from-qg-border via-qg-cyan/25 to-transparent mb-24"></div>
+        <div class="h-px w-full bg-gradient-to-r from-brand-border via-brand-cyan/20 to-transparent mb-20"></div>
 
-        <!-- ========================================================================= -->
-        <!-- 03. REPOSITORIES ECOSYSTEM (ALL 8 REPOSITORIES) -->
-        <!-- ========================================================================= -->
-        <section id="repos" class="mb-32 scroll-mt-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <!-- ===================================================================== -->
+        <!-- 03. ENGINEERING MODULES (6 SPECS WITH MODAL INSPECTOR) -->
+        <!-- ===================================================================== -->
+        <section id="modules" class="mb-28 scroll-mt-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                 <div>
-                    <h2 class="font-mono text-qg-cyan text-xs tracking-widest uppercase mb-2.5 flex items-center gap-2">
-                        <i data-lucide="folder-git-2" class="w-4 h-4 text-qg-cyan"></i> 03. Repositories Ecosystem
+                    <h2 class="font-mono text-brand-cyan text-xs tracking-widest uppercase mb-2 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4"></i> 03. Engineering Modules
                     </h2>
-                    <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Synchronized Code Repositories (8)</h3>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Autonomous Enforcement Engines</h3>
                 </div>
-                <!-- Category Tabs / Filter -->
-                <div class="flex flex-wrap items-center gap-2 p-1.5 rounded-lg bg-qg-bg border border-qg-border text-xs font-mono" id="repo-filter-bar">
-                    <button class="repo-filter-btn px-3 py-1.5 rounded-md bg-qg-cyan/15 text-qg-cyan font-bold border border-qg-cyan/30" data-filter="all">All (8)</button>
-                    <button class="repo-filter-btn px-3 py-1.5 rounded-md text-gray-400 hover:text-white" data-filter="cybersecurity">Cybersecurity & GRC (4)</button>
-                    <button class="repo-filter-btn px-3 py-1.5 rounded-md text-gray-400 hover:text-white" data-filter="ai-quantum">AI & Quantum (2)</button>
-                    <button class="repo-filter-btn px-3 py-1.5 rounded-md text-gray-400 hover:text-white" data-filter="platforms">Platforms & 3D (2)</button>
-                </div>
+                <span class="text-xs font-mono text-brand-muted">Deterministic Invariants • Zero 404 Links</span>
             </div>
 
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6" id="repos-container">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 
-                <!-- REPO 1: quantigrade-core -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="cybersecurity" id="repo-quantigrade-core">
+                <!-- 1. DORA Engine -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-qg-cyan/10 border border-qg-cyan/30 flex items-center justify-center text-qg-cyan flex-shrink-0">
-                                    <i data-lucide="shield" class="w-5 h-5"></i>
+                                <div class="p-2.5 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan">
+                                    <i data-lucide="activity" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        quantigrade-core
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-qg-cyan">Core Severity Calculator & Engine</span>
+                                    <h4 class="font-bold text-base text-white group-hover:text-brand-cyan transition-colors">DORA Resilience Engine</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">RTS EBA Incident Severity</span>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded bg-qg-green/10 text-qg-green border border-qg-green/30 text-[10px] font-mono font-bold">PRODUCTION</span>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">ACTIVE</span>
                         </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Enterprise-grade Python package for automated regulatory compliance auditing. Implements the complete DORA RTS EBA severity calculation matrix, OpenAPI 3.1 contracts, and DevSecOps pipelines with 100% strict typing.
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Calculates critical ICT incident thresholds (clients affected, downtime, economic impact, data loss) programmatically according to European Banking Authority RTS criteria.
                         </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>DORA Incident Severity Calculator (Art. 18 RTS)</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Zero critical SAST vulnerabilities (Bandit/Ruff)</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>FastAPI backend + GitHub Pages Deployment</span>
-                            </div>
-                        </div>
                     </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Python 3.12+</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">FastAPI</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Ruff/Mypy</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="px-3 py-1.5 rounded-lg bg-qg-cyan/10 hover:bg-qg-cyan text-qg-cyan hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-qg-cyan/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-brand-cyan">dora_severity.py</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-brand-cyan hover:text-white flex items-center gap-1 transition-colors" data-module="dora">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- REPO 2: enterprise-grc-platform -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="cybersecurity" id="repo-enterprise-grc-platform">
+                <!-- 2. PQC FIPS 204 -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
-                                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                                <div class="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400">
+                                    <i data-lucide="lock" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        enterprise-grc-platform
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-blue-400">Regulated AI & DevSecOps Platform</span>
+                                    <h4 class="font-bold text-base text-white group-hover:text-purple-400 transition-colors">Post-Quantum Cryptography</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">FIPS 204 (ML-DSA) & FIPS 203</span>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30 text-[10px] font-mono font-bold">SLSA L3+</span>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">QUANTUM READY</span>
                         </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Unified Governance, Risk and Compliance (GRC) architecture combining Next.js 15, Python 3.13, Zero-Trust network topologies, Merkle-based tamper-proof logging, and FinOps semantic query routing.
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Neutralizes Harvest-Now-Decrypt-Later (HNDL) threats by establishing lattice-based digital signatures and key encapsulation mechanisms verified against NIST benchmarks.
                         </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Full NIS2, DORA & ENS-Alta Alignment</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Continuous LLMOps & Semantic Guardrails</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Cryptographic FIPS 204 integration</span>
-                            </div>
-                        </div>
                     </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Next.js 15</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Python 3.13</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">LangGraph</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/enterprise-grc-platform" target="_blank" class="px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-blue-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-purple-400">ADR-0002 Spec</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-purple-400 hover:text-white flex items-center gap-1 transition-colors" data-module="pqc">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- REPO 3: horizont-2035 -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="ai-quantum" id="repo-horizont-2035">
+                <!-- 3. EU AI Act Guardrails -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 flex-shrink-0">
-                                    <i data-lucide="atom" class="w-5 h-5"></i>
+                                <div class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                                    <i data-lucide="cpu" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        horizont-2035
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-purple-400">Post-Quantum & ZKP Orchestrator</span>
+                                    <h4 class="font-bold text-base text-white group-hover:text-blue-400 transition-colors">EU AI Act Guardrails</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">MCP Protocol Interceptors</span>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 text-[10px] font-mono font-bold">DEEP TECH</span>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">ACTIVE</span>
                         </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Automated orchestrator designed to simulate, benchmark and deploy emerging quantum-resilient algorithms (ML-DSA, ML-KEM), Zero-Knowledge Proof (ZKP) identity protocols, and OWASP-grade LLM Honeypots.
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Provides continuous oversight for High-Risk AI systems (Articles 9, 12, 14). Intercepts prompts and tool execution cycles via Model Context Protocol to eliminate hallucinations and data poisoning.
                         </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>FIPS 203 & 204 Lattice Cryptography simulation</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Zero-Knowledge Proof (ZKP) verification engine</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>OWASP Top 10 LLM Active Honeypots</span>
-                            </div>
-                        </div>
                     </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Dockerfile</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">PQC / Rust</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">ZKP</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/horizont-2035" target="_blank" class="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-purple-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-blue-400">langgraph_mcp.py</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-blue-400 hover:text-white flex items-center gap-1 transition-colors" data-module="ai_act">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- REPO 4: langgraph-agent -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="ai-quantum" id="repo-langgraph-agent">
+                <!-- 4. CRA Supply Chain & SBOM -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 flex-shrink-0">
-                                    <i data-lucide="bot" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        langgraph-agent
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-teal-400">Enterprise Universal Agent & MCP</span>
-                                </div>
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/30 text-[10px] font-mono font-bold">ACTIVE</span>
-                        </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Universal AI Assistant platform built on LangGraph and the Model Context Protocol (MCP). Acts as an enterprise "USB-C for AI", ensuring deterministic context retrieval, dynamic multi-agent routing, and EU AI Act audit compliance.
-                        </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Standardized Model Context Protocol (MCP) servers</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>LangGraph cyclical multi-agent supervisor loops</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Deterministic tools & audit logging</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">LangGraph</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">MCP Protocol</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Python</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/langgraph-agent" target="_blank" class="px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500 text-teal-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-teal-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
-                    </div>
-                </div>
-
-                <!-- REPO 5: COMPLIANCE_MANAGER -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="cybersecurity" id="repo-compliance-manager">
-                    <div>
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
-                                    <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        COMPLIANCE_MANAGER
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-amber-400">CISO / CTO Executive Suite</span>
-                                </div>
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-mono font-bold">EXECUTIVE</span>
-                        </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            C-Level technical documentation and governance suite for Quantigrade. Delivers multi-regulatory risk heatmaps, executive briefs, board-level compliance ROI calculations, and DORA/NIS2 gap assessments.
-                        </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Comprehensive CISO/CTO Strategic Reports</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Multi-Normative Risk Evaluation Framework</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Regulatory Readiness & Penalty Mitigation</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">GRC Suite</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">C-Level Docs</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">DORA/NIS2</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/COMPLIANCE_MANAGER" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-amber-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
-                    </div>
-                </div>
-
-                <!-- REPO 6: clara-fix-tools -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="cybersecurity" id="repo-clara-fix-tools">
-                    <div>
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-qg-green/10 border border-qg-green/30 flex items-center justify-center text-qg-green flex-shrink-0">
-                                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        clara-fix-tools
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-qg-green">CCN-CERT CLARA Hardening Suite</span>
-                                </div>
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-qg-green/10 text-qg-green border border-qg-green/30 text-[10px] font-mono font-bold">ENS AUDIT</span>
-                        </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Automated remediation and hardening suite compliant with CCN-CERT (National Cryptologic Center of Spain) guidelines for ENS (Esquema Nacional de Seguridad: Alto, Medio, Bajo), NIS2 Article 21, and CRA.
-                        </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Automated OS Remediation (100% Audit Score)</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>ENS Baseline Security Measures (RD 311/2022)</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>CIS Benchmark & Kernel Parameter Hardening</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">CCN-CERT</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">ENS Alto</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Linux Hardening</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/clara-fix-tools" target="_blank" class="px-3 py-1.5 rounded-lg bg-qg-green/10 hover:bg-qg-green text-qg-green hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-qg-green/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
-                    </div>
-                </div>
-
-                <!-- REPO 7: kronos-fichaje-2025 -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="platforms" id="repo-kronos-fichaje-2025">
-                    <div>
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 flex-shrink-0">
-                                    <i data-lucide="clock" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        kronos-fichaje-2025
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-indigo-400">Workplace Compliance Backend</span>
-                                </div>
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-[10px] font-mono font-bold">CONTAINERIZED</span>
-                        </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            High-availability microservices backend for mandatory Spanish digital time-tracking regulations (Ley de Fichaje 2025). Designed with immutable record keeping, PostgreSQL relational integrity, and containerized deployment.
-                        </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Microservices architecture on Docker</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Tamper-evident timestamped event logs</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Spanish Labor Ministry 2025 Standard</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Docker</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">PostgreSQL</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Microservices</span>
-                        </div>
-                        <a href="https://github.com/Tardigrado-76/kronos-fichaje-2025" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-indigo-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
-                    </div>
-                </div>
-
-                <!-- REPO 8: diseno-mobiliario-3D -->
-                <div class="repo-card glass-card p-6 rounded-xl border border-qg-border flex flex-col justify-between" data-category="platforms" id="repo-diseno-mobiliario-3d">
-                    <div>
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400 flex-shrink-0">
+                                <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
                                     <i data-lucide="box" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-mono text-base font-bold text-white flex items-center gap-2">
-                                        diseno-mobiliario-3D
-                                    </h4>
-                                    <span class="text-[11px] font-mono text-pink-400">Spatial Computing 3D Engine</span>
+                                    <h4 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">CRA Supply Chain Engine</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">CycloneDX 1.6 & CISA KEV</span>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/30 text-[10px] font-mono font-bold">CROSS-PLATFORM</span>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">SLSA L3+</span>
                         </div>
-
-                        <p class="text-xs text-qg-textmuted mb-4 leading-relaxed">
-                            Full-stack 3D parametric spatial computing engine across Web, iOS and Android APKs. Features real-time rendering, material physics calculation, and interactive geometric customization.
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Mandatory Software Bill of Materials (SBOM) generation signed cryptographically in CI/CD. Blocks release pipelines instantly if dependencies match known exploited vulnerabilities.
                         </p>
-
-                        <div class="space-y-1.5 mb-4 font-mono text-[11px] text-gray-300">
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Cross-platform architecture (Web, iOS, Android APK)</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Parametric 3D CAD modeling & assembly logic</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <i data-lucide="check" class="w-3.5 h-3.5 text-qg-green"></i> <span>Real-time spatial visualization pipeline</span>
-                            </div>
-                        </div>
                     </div>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-amber-400">cyclonedx_sbom.json</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-amber-400 hover:text-white flex items-center gap-1 transition-colors" data-module="cra">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
 
-                    <div class="pt-4 border-t border-qg-border flex items-center justify-between">
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">WebGL</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">iOS / Android</span>
-                            <span class="px-2 py-0.5 rounded bg-qg-bg border border-qg-border text-gray-300">Spatial 3D</span>
+                <!-- 5. Merkle Immutability -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400">
+                                    <i data-lucide="git-commit" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base text-white group-hover:text-teal-400 transition-colors">Merkle Tree Ledger</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">SHA-256 Tamper-Proof Audit</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">IMMUTABLE</span>
                         </div>
-                        <a href="https://github.com/Tardigrado-76/diseno-mobiliario-3D" target="_blank" class="px-3 py-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500 text-pink-400 hover:text-black font-mono text-xs font-semibold transition-colors flex items-center gap-1.5 border border-pink-500/30">
-                            <i data-lucide="github" class="w-3.5 h-3.5"></i> Repo
-                        </a>
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Creates cryptographic leaf hashes for every compliance assessment. Forms an incremental Merkle Tree guaranteeing non-repudiation for regulatory auditors and judicial reviews.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-teal-400">merkle_audit.py</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-teal-400 hover:text-white flex items-center gap-1 transition-colors" data-module="immutability">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 6. OS Hardening -->
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 rounded-lg bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald">
+                                    <i data-lucide="server" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base text-white group-hover:text-brand-emerald transition-colors">CCN-CERT OS Hardening</h4>
+                                    <span class="text-[10px] font-mono text-brand-muted">ENS Alto & CIS Benchmark</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded border border-brand-emerald/30 bg-brand-emerald/10 text-brand-emerald text-[9px] font-mono font-bold">ENFORCED</span>
+                        </div>
+                        <p class="text-xs text-brand-muted leading-relaxed mb-4">
+                            Automates kernel-level parameter enforcement, eliminating privileged container escape paths and applying National Cryptologic Center (CCN-STIC) baselines.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-gray-400"><code class="text-brand-emerald">clara_remediation.sh</code></span>
+                        <button class="open-spec-btn text-xs font-mono text-brand-emerald hover:text-white flex items-center gap-1 transition-colors" data-module="hardening">
+                            Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <div class="h-px w-full bg-gradient-to-r from-qg-border via-qg-cyan/25 to-transparent mb-24"></div>
+        <div class="h-px w-full bg-gradient-to-r from-brand-border via-brand-cyan/20 to-transparent mb-20"></div>
 
-        <!-- ========================================================================= -->
-        <!-- 04. COMPLIANCE & ARCHITECTURE MATRIX -->
-        <!-- ========================================================================= -->
-        <section id="matrix" class="mb-32 scroll-mt-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <!-- ===================================================================== -->
+        <!-- 04. ADAPTIVE REGULATORY MATRIX -->
+        <!-- ===================================================================== -->
+        <section id="matrix" class="mb-28 scroll-mt-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                 <div>
-                    <h2 class="font-mono text-qg-cyan text-xs tracking-widest uppercase mb-2.5 flex items-center gap-2">
-                        <i data-lucide="grid" class="w-4 h-4"></i> 04. Compliance Matrix
+                    <h2 class="font-mono text-brand-cyan text-xs tracking-widest uppercase mb-2 flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4"></i> 04. Compliance Matrix
                     </h2>
-                    <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Regulatory Framework Mapping</h3>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Adaptive Regulatory Mapping</h3>
                 </div>
-                <p class="text-xs font-mono text-qg-textmuted">Mapped directly to repository implementations</p>
-            </div>
-
-            <div class="glass-card rounded-xl border border-qg-border overflow-hidden flex flex-col xl:flex-row shadow-xl">
-                <!-- Tabs Sidebar -->
-                <div class="w-full xl:w-1/3 border-b xl:border-b-0 xl:border-r border-qg-border bg-[#0B101A]/70">
-                    <button class="matrix-tab w-full text-left px-6 py-4 xl:py-5 font-mono text-sm border-l-2 border-qg-cyan bg-qg-cyan/10 text-qg-cyan" data-target="dora">
-                        <span class="block font-bold">DORA (EU 2022/2554)</span>
-                        <span class="text-xs font-sans text-qg-textmuted font-normal mt-0.5 block">Digital Operational Resilience • quantigrade-core</span>
-                    </button>
-                    <button class="matrix-tab w-full text-left px-6 py-4 xl:py-5 font-mono text-sm border-l-2 border-transparent text-gray-400 hover:bg-white/5 hover:text-white transition-colors" data-target="nis2">
-                        <span class="block font-bold">NIS2 Directive</span>
-                        <span class="text-xs font-sans text-qg-textmuted font-normal mt-0.5 block">Supply Chain & Incident Management</span>
-                    </button>
-                    <button class="matrix-tab w-full text-left px-6 py-4 xl:py-5 font-mono text-sm border-l-2 border-transparent text-gray-400 hover:bg-white/5 hover:text-white transition-colors" data-target="euai">
-                        <span class="block font-bold">EU AI Act (2024/1689)</span>
-                        <span class="text-xs font-sans text-qg-textmuted font-normal mt-0.5 block">High-Risk AI Systems • langgraph-agent</span>
-                    </button>
-                    <button class="matrix-tab w-full text-left px-6 py-4 xl:py-5 font-mono text-sm border-l-2 border-transparent text-gray-400 hover:bg-white/5 hover:text-white transition-colors" data-target="cra">
-                        <span class="block font-bold">Cyber Resilience Act (CRA)</span>
-                        <span class="text-xs font-sans text-qg-textmuted font-normal mt-0.5 block">Signed SBOMs & Hardware/Software Safety</span>
-                    </button>
-                    <button class="matrix-tab w-full text-left px-6 py-4 xl:py-5 font-mono text-sm border-l-2 border-transparent text-gray-400 hover:bg-white/5 hover:text-white transition-colors" data-target="ens">
-                        <span class="block font-bold">ENS (RD 311/2022)</span>
-                        <span class="text-xs font-sans text-qg-textmuted font-normal mt-0.5 block">CCN-CERT CLARA Remediation • clara-fix-tools</span>
-                    </button>
-                </div>
-
-                <!-- Tab Content -->
-                <div class="w-full xl:w-2/3 p-6 md:p-8 min-h-[380px] bg-qg-panel/30">
-                    
-                    <!-- DORA -->
-                    <div id="content-dora" class="matrix-content active">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-qg-border">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-qg-cyan"></div>
-                                <h4 class="font-bold text-white text-lg">DORA RTS EBA / ESMA Controls</h4>
-                            </div>
-                            <span class="text-xs font-mono text-qg-cyan">Implemented in quantigrade-core</span>
-                        </div>
-                        <div class="space-y-3.5">
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 18 / RTS Incident Severity Calculator</span>
-                                    <span class="text-[10px] font-mono text-qg-green">AUTOMATED</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Computes thresholds (clients affected, data loss, criticality) via deterministic algorithms in <code class="text-white bg-qg-panel px-1.5 py-0.5 rounded">quantigrade.core.dora_severity</code>.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 28: ICT Third-Party Supply Chain Risk</span>
-                                    <span class="text-[10px] font-mono text-qg-green">AUTOMATED</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Automated ingestion and verification of vendor SBOMs (CycloneDX 1.6) with automatic pipeline blocking on known CVEs.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 9(4): Cryptographic Key & Transit Resilience</span>
-                                    <span class="text-[10px] font-mono text-purple-400">PQC FIPS 204</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Mandates post-quantum digital signature readiness using ML-DSA against harvest attacks.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- NIS2 -->
-                    <div id="content-nis2" class="matrix-content">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-qg-border">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-qg-cyan"></div>
-                                <h4 class="font-bold text-white text-lg">NIS2 Directive (EU 2022/2555)</h4>
-                            </div>
-                            <span class="text-xs font-mono text-blue-400">enterprise-grc-platform</span>
-                        </div>
-                        <div class="space-y-3.5">
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 21(2)(d): Supply Chain & Essential Entity Security</span>
-                                    <span class="text-[10px] font-mono text-qg-green">ENFORCED</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">End-to-end supply chain telemetry, validating cryptographic provenance from source repository to production release.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 21(2)(h): Cryptography & Encryption Standards</span>
-                                    <span class="text-[10px] font-mono text-purple-400">QUANTUM READY</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Multi-layer hybrid cryptography: classical ECDSA + FIPS 204 ML-DSA to ensure forward secrecy.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-cyan font-bold">Art. 21(2)(e): Vulnerability Handling & Zero-Day CI</span>
-                                    <span class="text-[10px] font-mono text-qg-green">ZERO TOLERANCE</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Continuous SAST with Bandit, Ruff, and strict Mypy typing in GitHub Actions to stop flaws before merge.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- EU AI Act -->
-                    <div id="content-euai" class="matrix-content">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-qg-border">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-teal-400"></div>
-                                <h4 class="font-bold text-white text-lg">EU AI Act (Regulation 2024/1689)</h4>
-                            </div>
-                            <span class="text-xs font-mono text-teal-400">langgraph-agent</span>
-                        </div>
-                        <div class="space-y-3.5">
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-teal-400 font-bold">Art. 12: Automated Record-Keeping & Traceability</span>
-                                    <span class="text-[10px] font-mono text-qg-green">ACTIVE</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">LangGraph execution graphs record every state transition, tool call, and token footprint in tamper-evident logs.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-teal-400 font-bold">Art. 14: Human Oversight & Deterministic Guardrails</span>
-                                    <span class="text-[10px] font-mono text-qg-green">MCP PROTOCOL</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Human-in-the-loop interruption triggers via Model Context Protocol (MCP) whenever confidence scores fall below threshold.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-teal-400 font-bold">Art. 15: Cybersecurity & Adversarial Robustness</span>
-                                    <span class="text-[10px] font-mono text-qg-cyan">VERIFIED</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Prompt injection firewalls and output semantic sanitizers tested against OWASP Top 10 for LLMs.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CRA -->
-                    <div id="content-cra" class="matrix-content">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-qg-border">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                                <h4 class="font-bold text-white text-lg">Cyber Resilience Act (CRA)</h4>
-                            </div>
-                            <span class="text-xs font-mono text-amber-400">quantigrade-core & horizont-2035</span>
-                        </div>
-                        <div class="space-y-3.5">
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-amber-400 font-bold">Annex 1, Sec 2: Mandatory SBOM & Vulnerability Disclosure</span>
-                                    <span class="text-[10px] font-mono text-qg-green">CYCLONEDX 1.6</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Machine-readable software bill of materials cryptographically signed and archived alongside release binaries.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-amber-400 font-bold">Art. 10(1): Security by Design & Default</span>
-                                    <span class="text-[10px] font-mono text-qg-green">DEVSECOPS</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Zero default credentials, ephemeral runtime privileges, and minimal Alpine/distroless container images.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ENS -->
-                    <div id="content-ens" class="matrix-content">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-qg-border">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-qg-green"></div>
-                                <h4 class="font-bold text-white text-lg">Esquema Nacional de Seguridad (ENS)</h4>
-                            </div>
-                            <span class="text-xs font-mono text-qg-green">clara-fix-tools</span>
-                        </div>
-                        <div class="space-y-3.5">
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-green font-bold">CCN-STIC 800 Series / CLARA Remediation</span>
-                                    <span class="text-[10px] font-mono text-qg-green">100% AUDIT SCORE</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Automated scripts executing baseline remediation for Category High (ENS-Alto), eliminating manual configuration drift.</p>
-                            </div>
-                            <div class="p-4 rounded-lg border border-qg-border bg-qg-bg/90">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono text-qg-green font-bold">RD 311/2022 Principles: Traceability & Defense in Depth</span>
-                                    <span class="text-[10px] font-mono text-qg-green">INTEGRATED</span>
-                                </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Systematic logging, network segmentation, and non-repudiation controls enforced across enterprise infrastructure.</p>
-                            </div>
-                        </div>
-                    </div>
-
+                <!-- Framework Filter Tabs -->
+                <div class="flex flex-wrap gap-1.5 p-1 bg-brand-base border border-brand-border rounded-lg text-xs font-mono" id="matrix-tab-bar">
+                    <button class="matrix-btn px-3 py-1.5 rounded bg-brand-cyan/20 text-brand-cyan font-bold border border-brand-cyan/40" data-target="dora">DORA (EBA)</button>
+                    <button class="matrix-btn px-3 py-1.5 rounded text-gray-400 hover:text-white" data-target="nis2">NIS2 Directive</button>
+                    <button class="matrix-btn px-3 py-1.5 rounded text-gray-400 hover:text-white" data-target="euai">EU AI Act</button>
+                    <button class="matrix-btn px-3 py-1.5 rounded text-gray-400 hover:text-white" data-target="cra">Cyber Resilience Act</button>
                 </div>
             </div>
-        </section>
 
-        <div class="h-px w-full bg-gradient-to-r from-qg-border via-qg-cyan/25 to-transparent mb-24"></div>
-
-        <!-- ========================================================================= -->
-        <!-- 05. CODE & ARCHITECTURE (PROOF OF ENGINEERING) -->
-        <!-- ========================================================================= -->
-        <section id="proof" class="mb-32 scroll-mt-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-                <div>
-                    <h2 class="font-mono text-qg-cyan text-xs tracking-widest uppercase mb-2.5 flex items-center gap-2">
-                        <i data-lucide="file-code-2" class="w-4 h-4"></i> 05. Code & Architecture
-                    </h2>
-                    <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Proof of Engineering (Anti-Vaporware)</h3>
-                </div>
-                <p class="text-xs font-mono text-qg-textmuted">Real source files verifiable directly on GitHub</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Matrix Content Card -->
+            <div class="glass-panel p-6 rounded-xl border border-brand-border min-h-[300px]">
                 
-                <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml" target="_blank" class="glass-card p-5 rounded-xl flex items-start gap-4 hover:border-qg-cyan transition-colors group">
-                    <div class="p-3 bg-qg-bg rounded-lg text-gray-400 group-hover:text-qg-cyan group-hover:bg-qg-cyan/10 transition-colors">
-                        <i data-lucide="git-merge" class="w-5 h-5"></i>
+                <!-- DORA Table -->
+                <div id="tab-dora" class="matrix-view block space-y-3">
+                    <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+                        <h4 class="font-bold text-white text-sm font-mono flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-cyan"></span> Regulation (EU) 2022/2554 — DORA Technical Standards
+                        </h4>
+                        <span class="text-[10px] font-mono text-brand-cyan">Target: Financial Entities & Critical ICT Providers</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 18 / RTS Incident Criteria</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Deterministic Severity Scoring</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: <code class="text-gray-200">quantigrade.core.dora_severity.calculate_dora_severity()</code> assesses impact thresholds automatically.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 28 / Third-Party ICT Risk</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Automated Multi-Vendor Telemetry</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: <code class="text-gray-200">quantigrade.supply_chain.vendor_sbom_audit()</code> continuously inspects vendor dependencies.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 9(4) / Cryptographic Key Security</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Post-Quantum Signature Invariants</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: <code class="text-gray-200">quantigrade.crypto.pqc.FIPS204Validator()</code> mandates hybrid lattice encryption.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 16 / Resilience Testing</span>
+                            <h5 class="text-xs font-bold text-white mb-1">CI/CD Regression Hardening</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Automated GitHub Actions pipeline blocks builds exceeding latency and fault tolerance thresholds.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NIS2 Table -->
+                <div id="tab-nis2" class="matrix-view hidden space-y-3">
+                    <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+                        <h4 class="font-bold text-white text-sm font-mono flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-cyan"></span> Directive (EU) 2022/2555 — NIS2 Cybersecurity Measures
+                        </h4>
+                        <span class="text-[10px] font-mono text-brand-cyan">Target: Essential & Important Entities</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 21(2)(d) / Supply Chain Security</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Cryptographic Provenance Verification</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: <code class="text-gray-200">quantigrade.provenance.in_toto_verify()</code> enforces tamper-proof attestations.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 21(2)(h) / Cryptography Standards</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Zero-Trust Network Encryption</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: WireGuard and mTLS transport enforcement with state-of-the-art cipher suites.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 21(2)(e) / Vulnerability Handling</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Deterministic SAST Gates</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Ruff, Bandit, and Mypy strict modes assert clean code before any container artifact generation.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-cyan block mb-1">Article 23 / Incident Reporting</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Early Warning Telemetry</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Generates standardized machine-readable incident drafts ready for national CSIRT submissions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EU AI Act Table -->
+                <div id="tab-euai" class="matrix-view hidden space-y-3">
+                    <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+                        <h4 class="font-bold text-white text-sm font-mono flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-purple"></span> Regulation (EU) 2024/1689 — EU AI Act
+                        </h4>
+                        <span class="text-[10px] font-mono text-brand-purple">Target: High-Risk AI Systems & GPAI</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-purple block mb-1">Article 12 / Automatic Logging</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Deterministic Model Traceability</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade Module: <code class="text-gray-200">quantigrade.ai.mcp_logger.record_event()</code> logs all model inputs/outputs in SHA-256 Merkle nodes.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-purple block mb-1">Article 14 / Human Oversight</span>
+                            <h5 class="text-xs font-bold text-white mb-1">MCP Circuit Breakers</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Interceptors force human-in-the-loop authorization whenever an autonomous agent confidence index dips below 95%.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-purple block mb-1">Article 15 / Cybersecurity & Robustness</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Prompt Injection Firewall</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">OWASP LLM Top 10 automated sanitizers reject adversarial token combinations at the perimeter.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-purple block mb-1">Article 10 / Data Governance</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Dataset Hash Anchoring</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Anchors training and RAG context hashes cryptographically to detect data poisoning attacks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CRA Table -->
+                <div id="tab-cra" class="matrix-view hidden space-y-3">
+                    <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+                        <h4 class="font-bold text-white text-sm font-mono flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-amber"></span> Regulation (EU) 2024/2847 — Cyber Resilience Act (CRA)
+                        </h4>
+                        <span class="text-[10px] font-mono text-brand-amber">Target: Products with Digital Elements</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-amber block mb-1">Annex 1, Section 2 / Mandatory SBOM</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Machine-Readable CycloneDX 1.6</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Quantigrade generates and signs CycloneDX SBOMs for all build targets, verifiable via public key.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-amber block mb-1">Article 10 / Security by Default</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Zero-Privilege Runtime</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Distroless, non-root execution profiles with read-only root filesystems across Docker deployments.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-amber block mb-1">Article 11 / Vulnerability Reporting</span>
+                            <h5 class="text-xs font-bold text-white mb-1">CISA KEV Continuous Crosscheck</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Real-time matching against Known Exploited Vulnerabilities catalog during CI/CD build steps.</p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-brand-base border border-brand-border">
+                            <span class="font-mono text-[10px] text-brand-amber block mb-1">Annex 1, Section 1 / Integrity Verification</span>
+                            <h5 class="text-xs font-bold text-white mb-1">Signed Update Attestations</h5>
+                            <p class="text-[11px] text-brand-muted leading-relaxed">Cryptographic in-toto signatures prevent malicious tampering during software release cycles.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="h-px w-full bg-gradient-to-r from-brand-border via-brand-cyan/20 to-transparent mb-20"></div>
+
+        <!-- ===================================================================== -->
+        <!-- 05. REPOSITORY EVIDENCE (GITHUB PROOF HUB) -->
+        <!-- ===================================================================== -->
+        <section id="evidence" class="mb-28 scroll-mt-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="font-mono text-brand-cyan text-xs tracking-widest uppercase mb-2 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> 05. Repository Evidence
+                    </h2>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Proof of Engineering (Anti-Vaporware)</h3>
+                </div>
+                <span class="text-xs font-mono text-brand-muted">Public Verified Links on tardigrado-76/quantigrade-core</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <!-- Proof 1: CI Workflow -->
+                <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml" target="_blank" class="glass-panel p-5 rounded-xl flex items-start gap-4 hover:border-brand-cyan transition-colors group">
+                    <div class="p-3 bg-brand-base rounded-lg text-gray-400 group-hover:text-brand-cyan transition-colors">
+                        <i data-lucide="git-pull-request" class="w-5 h-5"></i>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
-                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-qg-cyan transition-colors">ci.yml</h4>
-                            <span class="text-[10px] font-mono text-qg-green">PASSING</span>
+                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-brand-cyan transition-colors">ci.yml</h4>
+                            <span class="text-[9px] font-mono text-brand-emerald px-1.5 py-0.5 rounded bg-brand-emerald/10 border border-brand-emerald/30">PASSING</span>
                         </div>
-                        <p class="text-xs text-qg-textmuted mb-2">Automated DevSecOps Pipeline via GitHub Actions: Ruff, Mypy Strict, Bandit SAST, Pytest.</p>
-                        <span class="text-[11px] font-mono text-qg-cyan flex items-center gap-1">Inspect Workflow <i data-lucide="external-link" class="w-3 h-3"></i></span>
+                        <p class="text-xs text-brand-muted mb-3">DevSecOps GitHub Actions Workflow: Ruff, Mypy Strict, Bandit SAST & Pytest execution.</p>
+                        <span class="text-xs font-mono text-brand-cyan flex items-center gap-1 group-hover:underline">
+                            Inspect Workflow <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </span>
                     </div>
                 </a>
 
-                <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/pyproject.toml" target="_blank" class="glass-card p-5 rounded-xl flex items-start gap-4 hover:border-qg-cyan transition-colors group">
-                    <div class="p-3 bg-qg-bg rounded-lg text-gray-400 group-hover:text-qg-cyan group-hover:bg-qg-cyan/10 transition-colors">
-                        <i data-lucide="settings" class="w-5 h-5"></i>
+                <!-- Proof 2: pyproject.toml -->
+                <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/pyproject.toml" target="_blank" class="glass-panel p-5 rounded-xl flex items-start gap-4 hover:border-brand-cyan transition-colors group">
+                    <div class="p-3 bg-brand-base rounded-lg text-gray-400 group-hover:text-brand-cyan transition-colors">
+                        <i data-lucide="file-code" class="w-5 h-5"></i>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
-                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-qg-cyan transition-colors">pyproject.toml</h4>
-                            <span class="text-[10px] font-mono text-qg-cyan">STRICT MODE</span>
+                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-brand-cyan transition-colors">pyproject.toml</h4>
+                            <span class="text-[9px] font-mono text-brand-cyan px-1.5 py-0.5 rounded bg-brand-cyan/10 border border-brand-cyan/30">MYPY STRICT</span>
                         </div>
-                        <p class="text-xs text-qg-textmuted mb-2">Central build configuration with strict Mypy typing, Ruff linting rules, and dependency manifests.</p>
-                        <span class="text-[11px] font-mono text-qg-cyan flex items-center gap-1">Inspect Config <i data-lucide="external-link" class="w-3 h-3"></i></span>
+                        <p class="text-xs text-brand-muted mb-3">Root build metadata enforcing 100% strict type safety rules and zero-flaw lint constraints.</p>
+                        <span class="text-xs font-mono text-brand-cyan flex items-center gap-1 group-hover:underline">
+                            Inspect Config <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </span>
                     </div>
                 </a>
 
-                <a href="https://github.com/Tardigrado-76/quantigrade-core/tree/main/docs/adr" target="_blank" class="glass-card p-5 rounded-xl flex items-start gap-4 hover:border-qg-cyan transition-colors group">
-                    <div class="p-3 bg-qg-bg rounded-lg text-gray-400 group-hover:text-qg-cyan group-hover:bg-qg-cyan/10 transition-colors">
+                <!-- Proof 3: ADR -->
+                <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0001-record-architecture-decisions.md" target="_blank" class="glass-panel p-5 rounded-xl flex items-start gap-4 hover:border-brand-cyan transition-colors group">
+                    <div class="p-3 bg-brand-base rounded-lg text-gray-400 group-hover:text-brand-cyan transition-colors">
                         <i data-lucide="book-open" class="w-5 h-5"></i>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
-                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-qg-cyan transition-colors">ADR 0001 & 0002</h4>
-                            <span class="text-[10px] font-mono text-purple-400">ARCH DECISIONS</span>
+                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-brand-cyan transition-colors">ADR 0001 & 0002</h4>
+                            <span class="text-[9px] font-mono text-brand-purple px-1.5 py-0.5 rounded bg-brand-purple/10 border border-brand-purple/30">ARCHITECTURE</span>
                         </div>
-                        <p class="text-xs text-qg-textmuted mb-2">Architecture Decision Records documenting PQC standard migration and immutable audit trails.</p>
-                        <span class="text-[11px] font-mono text-qg-cyan flex items-center gap-1">Read ADRs <i data-lucide="external-link" class="w-3 h-3"></i></span>
+                        <p class="text-xs text-brand-muted mb-3">Formal Architecture Decision Records formalizing Post-Quantum cryptography migration.</p>
+                        <span class="text-xs font-mono text-brand-cyan flex items-center gap-1 group-hover:underline">
+                            Read Decisions <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </span>
                     </div>
                 </a>
 
-                <a href="https://github.com/Tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="glass-card p-5 rounded-xl flex items-start gap-4 hover:border-qg-cyan transition-colors group">
-                    <div class="p-3 bg-qg-bg rounded-lg text-gray-400 group-hover:text-qg-cyan group-hover:bg-qg-cyan/10 transition-colors">
+                <!-- Proof 4: dora_severity.py -->
+                <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="glass-panel p-5 rounded-xl flex items-start gap-4 hover:border-brand-cyan transition-colors group">
+                    <div class="p-3 bg-brand-base rounded-lg text-gray-400 group-hover:text-brand-cyan transition-colors">
                         <i data-lucide="terminal" class="w-5 h-5"></i>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
-                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-qg-cyan transition-colors">dora_severity.py</h4>
-                            <span class="text-[10px] font-mono text-qg-green">ALGORITHMIC</span>
+                            <h4 class="font-mono text-sm font-bold text-white group-hover:text-brand-cyan transition-colors">dora_severity.py</h4>
+                            <span class="text-[9px] font-mono text-brand-emerald px-1.5 py-0.5 rounded bg-brand-emerald/10 border border-brand-emerald/30">CORE ENGINE</span>
                         </div>
-                        <p class="text-xs text-qg-textmuted mb-2">Production Python module calculating DORA RTS EBA severity levels with 100% test coverage.</p>
-                        <span class="text-[11px] font-mono text-qg-cyan flex items-center gap-1">View Implementation <i data-lucide="external-link" class="w-3 h-3"></i></span>
+                        <p class="text-xs text-brand-muted mb-3">Functional Python module evaluating real DORA incident classification thresholds with Pytest.</p>
+                        <span class="text-xs font-mono text-brand-cyan flex items-center gap-1 group-hover:underline">
+                            View Python Source <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </span>
                     </div>
                 </a>
 
             </div>
         </section>
 
-        <div class="h-px w-full bg-gradient-to-r from-qg-border via-qg-cyan/25 to-transparent mb-24"></div>
+        <div class="h-px w-full bg-gradient-to-r from-brand-border via-brand-cyan/20 to-transparent mb-20"></div>
 
-        <!-- ========================================================================= -->
-        <!-- 06. LEAD ARCHITECT -->
-        <!-- ========================================================================= -->
-        <section id="architect" class="mb-16 scroll-mt-8">
+        <!-- ===================================================================== -->
+        <!-- 06. LEAD ARCHITECT SECTION -->
+        <!-- ===================================================================== -->
+        <section id="architect" class="mb-16 scroll-mt-6">
             <div class="mb-8">
-                <h2 class="font-mono text-qg-cyan text-xs tracking-widest uppercase mb-2.5 flex items-center gap-2">
+                <h2 class="font-mono text-brand-cyan text-xs tracking-widest uppercase mb-2 flex items-center gap-2">
                     <i data-lucide="user-check" class="w-4 h-4"></i> 06. Lead Architect
                 </h2>
-                <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Executive Engineering Profile</h3>
+                <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Executive Technical Profile</h3>
             </div>
-            
-            <div class="glass-card rounded-xl p-8 lg:p-10 border border-qg-border relative overflow-hidden">
-                <div class="absolute right-0 bottom-0 w-80 h-80 bg-qg-cyan/5 rounded-tl-full blur-3xl -z-10"></div>
-                
-                <div class="flex flex-col md:flex-row gap-8 items-start">
-                    <div class="w-20 h-20 rounded-xl bg-qg-bg border border-qg-border flex items-center justify-center flex-shrink-0 shadow-lg text-qg-cyan">
-                        <i data-lucide="terminal" class="w-10 h-10"></i>
-                    </div>
+
+            <div class="glass-panel p-7 sm:p-9 rounded-xl relative overflow-hidden">
+                <div class="flex flex-col md:flex-row gap-7 items-start">
                     
+                    <!-- Avatar Graphic -->
+                    <div class="w-20 h-20 rounded-xl bg-brand-base border border-brand-border flex items-center justify-center flex-shrink-0 text-brand-cyan shadow-lg">
+                        <i data-lucide="shield" class="w-10 h-10"></i>
+                    </div>
+
                     <div class="flex-1">
                         <div class="flex flex-wrap items-center gap-3 mb-2">
-                            <h3 class="text-2xl font-bold text-white">Principal AI & Security Architect</h3>
-                            <span class="px-2.5 py-0.5 rounded bg-qg-cyan/10 border border-qg-cyan/30 text-qg-cyan text-xs font-mono">15+ Years Track Record</span>
+                            <h4 class="text-2xl font-bold text-white">Principal AI & Security Architect</h4>
+                            <span class="px-2.5 py-0.5 rounded bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-mono">15+ Years Track Record</span>
                         </div>
-                        <p class="text-xs font-mono text-gray-400 mb-4">Cybersecurity Architect • DevSecOps Lead • Regulated Systems Specialist</p>
-                        
-                        <p class="text-sm text-qg-textmuted leading-relaxed mb-6 max-w-3xl">
-                            Over 15 years engineering mission-critical architectures across offensive security, high-assurance distributed systems, and commercial SaaS. Quantigrade was conceived to bridge the persistent gap between European legislative mandates (DORA, NIS2, EU AI Act, CRA, ENS) and modern high-velocity CI/CD engineering teams.
+                        <span class="text-xs font-mono text-brand-muted block mb-4">Enterprise Infrastructure • Regulatory Engineering • Zero-Trust Architectures</span>
+
+                        <p class="text-xs sm:text-sm text-brand-muted leading-relaxed mb-6 max-w-3xl">
+                            Specializing in bridging European regulatory frameworks with modern high-velocity DevSecOps environments. Quantigrade Core is engineered as an executable answer to bureaucratic compliance, replacing subjective audits with mathematically verifiable cryptographic proofs.
                         </p>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                            <div class="p-3 rounded-lg bg-qg-bg/80 border border-qg-border">
-                                <div class="text-lg font-bold font-mono text-white">8</div>
-                                <div class="text-[11px] text-gray-400 font-mono">Synchronized Repos</div>
+                        <!-- Engineering Key Metrics -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                            <div class="p-3 rounded bg-brand-base border border-brand-border">
+                                <span class="text-xs font-mono text-gray-400 block">Experience</span>
+                                <span class="font-mono text-base font-bold text-white">15+ Years</span>
                             </div>
-                            <div class="p-3 rounded-lg bg-qg-bg/80 border border-qg-border">
-                                <div class="text-lg font-bold font-mono text-qg-green">0</div>
-                                <div class="text-[11px] text-gray-400 font-mono">Critical Vulnerabilities</div>
+                            <div class="p-3 rounded bg-brand-base border border-brand-border">
+                                <span class="text-xs font-mono text-gray-400 block">SAST Bandit</span>
+                                <span class="font-mono text-base font-bold text-brand-emerald">0 Critical</span>
                             </div>
-                            <div class="p-3 rounded-lg bg-qg-bg/80 border border-qg-border">
-                                <div class="text-lg font-bold font-mono text-qg-cyan">100%</div>
-                                <div class="text-[11px] text-gray-400 font-mono">Strict Type Safety</div>
+                            <div class="p-3 rounded bg-brand-base border border-brand-border">
+                                <span class="text-xs font-mono text-gray-400 block">Type Safety</span>
+                                <span class="font-mono text-base font-bold text-brand-cyan">100% Mypy</span>
                             </div>
-                            <div class="p-3 rounded-lg bg-qg-bg/80 border border-qg-border">
-                                <div class="text-lg font-bold font-mono text-purple-400">PQC</div>
-                                <div class="text-[11px] text-gray-400 font-mono">Quantum-Resilient</div>
+                            <div class="p-3 rounded bg-brand-base border border-brand-border">
+                                <span class="text-xs font-mono text-gray-400 block">PQC Standard</span>
+                                <span class="font-mono text-base font-bold text-purple-400">FIPS 204</span>
                             </div>
                         </div>
-                        
-                        <div class="flex flex-wrap gap-4">
-                            <a href="https://github.com/Tardigrado-76" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors text-sm shadow-xl font-mono">
-                                <i data-lucide="github" class="w-4 h-4"></i> View All GitHub Repositories
+
+                        <!-- CTA Links -->
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://github.com/tardigrado-76/quantigrade-core" target="_blank" class="px-6 py-2.5 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-mono flex items-center gap-2">
+                                <i data-lucide="github" class="w-4 h-4"></i> View GitHub Source Code
                             </a>
-                            <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-qg-bg border border-qg-border text-white font-semibold rounded-lg hover:border-qg-cyan transition-colors text-sm font-mono">
-                                <i data-lucide="star" class="w-4 h-4 text-qg-cyan"></i> Star quantigrade-core
+                            <a href="https://github.com/tardigrado-76" target="_blank" class="px-6 py-2.5 bg-brand-base border border-brand-border text-white font-semibold rounded-lg hover:border-brand-cyan transition-colors text-xs sm:text-sm font-mono flex items-center gap-2">
+                                <i data-lucide="user" class="w-4 h-4"></i> GitHub Profile
                             </a>
                         </div>
                     </div>
@@ -1283,187 +935,447 @@
             </div>
         </section>
 
-        <!-- Footer inside main -->
-        <footer class="border-t border-qg-border pt-8 pb-8 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-gray-500 gap-4">
-            <div>
-                &copy; 2026 Quantigrade Core. All rights reserved.
-            </div>
-            <div class="flex items-center gap-4 text-gray-400">
-                <a href="https://github.com/Tardigrado-76/quantigrade-core" target="_blank" class="hover:text-qg-cyan transition-colors">quantigrade-core</a>
+        <!-- Footer -->
+        <footer class="border-t border-brand-border pt-6 pb-4 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-3">
+            <div>&copy; 2026 Quantigrade Core. High-Assurance Compliance Architecture.</div>
+            <div class="flex items-center gap-3">
+                <a href="https://github.com/tardigrado-76/quantigrade-core" target="_blank" class="hover:text-brand-cyan transition-colors">GitHub</a>
                 <span>•</span>
-                <a href="https://github.com/Tardigrado-76/enterprise-grc-platform" target="_blank" class="hover:text-qg-cyan transition-colors">enterprise-grc</a>
-                <span>•</span>
-                <a href="https://github.com/Tardigrado-76/horizont-2035" target="_blank" class="hover:text-qg-cyan transition-colors">horizont-2035</a>
-                <span>•</span>
-                <a href="https://github.com/Tardigrado-76/langgraph-agent" target="_blank" class="hover:text-qg-cyan transition-colors">langgraph-agent</a>
+                <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/LICENSE" target="_blank" class="hover:text-brand-cyan transition-colors">MIT License</a>
             </div>
         </footer>
+
     </main>
 
-    <!-- JavaScript Interactive Handlers -->
+    <!-- ========================================================================= -->
+    <!-- NATIVE JS SPEC INSPECTOR MODAL (No Broken Links / 404s) -->
+    <!-- ========================================================================= -->
+    <div id="spec-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div id="spec-modal" class="bg-brand-surface border border-brand-border rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl modal-enter">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-brand-border flex items-center justify-between bg-brand-base/80">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-1.5 rounded bg-brand-cyan/10 text-brand-cyan" id="modal-icon-container">
+                        <i data-lucide="code" class="w-4 h-4"></i>
+                    </span>
+                    <div>
+                        <h4 class="font-mono text-sm font-bold text-white" id="modal-title">Module Specification</h4>
+                        <span class="text-[10px] font-mono text-brand-muted" id="modal-subtitle">Deterministic Architecture Payload</span>
+                    </div>
+                </div>
+                <button id="modal-close-btn" class="p-1.5 rounded-lg text-brand-muted hover:text-white hover:bg-brand-border transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Code Body -->
+            <div class="p-5 overflow-y-auto font-mono text-xs text-gray-300 bg-[#070A10] flex-grow leading-relaxed">
+                <div class="flex items-center justify-between mb-3 text-[11px] text-gray-500 pb-2 border-b border-brand-border">
+                    <span id="modal-format-badge">FORMAT: YAML / JSON</span>
+                    <span class="text-brand-emerald">● VERIFIED ARTIFACT</span>
+                </div>
+                <pre class="whitespace-pre-wrap overflow-x-auto text-brand-cyan" id="modal-code-content">// Loading specification payload...</pre>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3.5 border-t border-brand-border bg-brand-base/90 flex items-center justify-between">
+                <span class="text-[10px] font-mono text-brand-muted">Quantigrade Invariant Specification v2.0</span>
+                <button id="modal-copy-btn" class="px-3 py-1.5 rounded bg-brand-surface border border-brand-border text-xs font-mono text-white hover:border-brand-cyan flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Spec
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT: TERMINAL, ARCH FLOW, MODAL, MATRIX & MOBILE DRAWER -->
+    <!-- ========================================================================= -->
     <script>
-        // Initialize Lucide Icons
+        // 1. Initialize Icons
         lucide.createIcons();
 
-        // Terminal Animated Script with live ecosystem telemetry
-        const terminalLines = [
-            '<span class="text-white">$ quantigrade-ecosystem audit --all-repos --frameworks=dora,nis2,eu-ai-act,ens,cra</span>',
-            '<span class="text-blue-400">[+] Discovered 8 synchronized repositories for user Tardigrado-76...</span>',
-            '<span class="text-blue-400">[1/8] quantigrade-core: Verifying DORA RTS EBA Severity Engine...</span> <span class="text-qg-green">[PASS 24/24]</span>',
-            '<span class="text-blue-400">[2/8] enterprise-grc-platform: Validating SLSA L3+ and Merkle Tree...</span> <span class="text-qg-green">[SEALED: SHA-256]</span>',
-            '<span class="text-blue-400">[3/8] horizont-2035: Benchmarking FIPS 204 ML-DSA & ML-KEM...</span> <span class="text-purple-400">[PQC VERIFIED]</span>',
-            '<span class="text-blue-400">[4/8] langgraph-agent: Checking Model Context Protocol (MCP) Guardrails...</span> <span class="text-teal-400">[EU AI ACT PASS]</span>',
-            '<span class="text-blue-400">[5/8] clara-fix-tools: Inspecting CCN-CERT CLARA Remediation Rules...</span> <span class="text-qg-green">[ENS-ALTO 100%]</span>',
-            '<span class="text-blue-400">[6/8] COMPLIANCE_MANAGER: Parsing Executive CISO / CTO Matrix...</span> <span class="text-yellow-400">[READY]</span>',
-            '<span class="text-blue-400">[7/8] kronos-fichaje-2025: Verifying Ley de Fichaje Microservices...</span> <span class="text-qg-green">[DOCKER PASS]</span>',
-            '<span class="text-blue-400">[8/8] diseno-mobiliario-3D: Validating Spatial Engine & CAD pipeline...</span> <span class="text-pink-400">[OK]</span>',
-            '<span class="text-qg-green font-bold">[✓] ECOSYSTEM AUDIT COMPLETED. 0 Vulnerabilities. Cryptographic Root anchored.</span>'
+        // 2. Terminal Typewriter Simulation
+        const terminalLogLines = [
+            '<span class="text-white">$ quantigrade-core verify --all-invariants --pqc --strict</span>',
+            '<span class="text-blue-400">[0.00s] Ingesting telemetry context: DORA RTS / EU AI Act...</span>',
+            '<span class="text-blue-400">[0.04s] Validating CycloneDX 1.6 SBOM against CISA KEV...</span> <span class="text-brand-emerald font-bold">[0 CVEs]</span>',
+            '<span class="text-blue-400">[0.11s] Initializing Post-Quantum Lattice: FIPS 204 (ML-DSA-87)...</span> <span class="text-purple-400">[READY]</span>',
+            '<span class="text-blue-400">[0.18s] Scanning EU AI Act MCP Guardrails (Drift Threshold: 0.02)...</span> <span class="text-brand-emerald">[PASS]</span>',
+            '<span class="text-blue-400">[0.26s] Running DORA RTS Incident Severity Matrix (24 Vectors)...</span> <span class="text-brand-emerald">[PASS]</span>',
+            '<span class="text-blue-400">[0.32s] Constructing Incremental Merkle Tree (SHA-256 root)...</span>',
+            '<span class="text-gray-400">       Merkle Root: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069</span>',
+            '<span class="text-brand-emerald font-bold">[✓] SYSTEM AUDIT SEALED. Overhead: 34ms. Zero Trust Compliant.</span>'
         ];
 
-        const terminalContent = document.getElementById('terminal-content');
-        let currentLine = 0;
-
-        function typeWriter(text, element, callback) {
-            let i = 0;
-            element.innerHTML = '';
-            element.classList.add('cursor');
-
-            function type() {
-                if (i < text.length) {
-                    if (text.charAt(i) === '<') {
-                        const closingIndex = text.indexOf('>', i);
-                        if (closingIndex !== -1) {
-                            i = closingIndex + 1;
-                        } else {
-                            i++;
-                        }
-                    } else {
-                        i++;
-                    }
-
-                    element.innerHTML = text.substring(0, i);
-                    const delay = Math.random() * 20 + 8;
-                    setTimeout(type, delay);
-                } else {
-                    element.classList.remove('cursor');
-                    if (callback) callback();
-                }
-            }
-            type();
-        }
+        const terminalScreen = document.getElementById('terminal-screen');
+        let typeTimeout;
+        let lineIdx = 0;
 
         function runTerminal() {
-            if (currentLine < terminalLines.length) {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'mb-1.5';
-                terminalContent.appendChild(lineDiv);
-                
-                typeWriter(terminalLines[currentLine], lineDiv, () => {
-                    currentLine++;
-                    setTimeout(runTerminal, 200);
-                });
+            clearTimeout(typeTimeout);
+            terminalScreen.innerHTML = '';
+            lineIdx = 0;
+            typeNextLine();
+        }
+
+        function typeNextLine() {
+            if (lineIdx < terminalLogLines.length) {
+                const row = document.createElement('div');
+                row.className = 'mb-1';
+                terminalScreen.appendChild(row);
+
+                const fullText = terminalLogLines[lineIdx];
+                let charIdx = 0;
+                row.classList.add('terminal-cursor');
+
+                function stepChar() {
+                    if (charIdx < fullText.length) {
+                        if (fullText.charAt(charIdx) === '<') {
+                            const closeIdx = fullText.indexOf('>', charIdx);
+                            charIdx = (closeIdx !== -1) ? closeIdx + 1 : charIdx + 1;
+                        } else {
+                            charIdx++;
+                        }
+                        row.innerHTML = fullText.substring(0, charIdx);
+                        typeTimeout = setTimeout(stepChar, Math.random() * 15 + 6);
+                    } else {
+                        row.classList.remove('terminal-cursor');
+                        lineIdx++;
+                        typeTimeout = setTimeout(typeNextLine, 120);
+                    }
+                }
+                stepChar();
             } else {
-                const finalCursor = document.createElement('div');
-                finalCursor.className = 'cursor h-3.5 w-2 inline-block mt-2';
-                terminalContent.appendChild(finalCursor);
+                const endCursor = document.createElement('div');
+                endCursor.className = 'terminal-cursor h-3 w-2 inline-block';
+                terminalScreen.appendChild(endCursor);
             }
         }
-        setTimeout(runTerminal, 600);
 
-        // Repositories Category Filter
-        const filterBtns = document.querySelectorAll('.repo-filter-btn');
-        const repoCards = document.querySelectorAll('.repo-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const filter = btn.getAttribute('data-filter');
-                
-                filterBtns.forEach(b => {
-                    b.classList.remove('bg-qg-cyan/15', 'text-qg-cyan', 'font-bold', 'border', 'border-qg-cyan/30');
-                    b.classList.add('text-gray-400');
-                });
-                btn.classList.add('bg-qg-cyan/15', 'text-qg-cyan', 'font-bold', 'border', 'border-qg-cyan/30');
-                btn.classList.remove('text-gray-400');
-
-                repoCards.forEach(card => {
-                    const cardCat = card.getAttribute('data-category');
-                    if (filter === 'all' || cardCat === filter) {
-                        card.classList.remove('hidden-filter');
-                    } else {
-                        card.classList.add('hidden-filter');
-                    }
-                });
-            });
+        document.getElementById('terminal-replay-btn').addEventListener('click', () => {
+            runTerminal();
         });
+        setTimeout(runTerminal, 400);
 
-        // Compliance Matrix Tabs
-        const tabBtns = document.querySelectorAll('.matrix-tab');
-        const tabContents = document.querySelectorAll('.matrix-content');
+        // 3. Architecture Flow Interaction
+        const flowData = {
+            1: {
+                title: "Stage 1: Client API Request Ingestion",
+                standard: "RFC 9110 / HTTP/3",
+                desc: "API requests enter through a hardened FastAPI gateway with strictly typed Pydantic v2 schemas. Headers are evaluated for deterministic execution traces before downstream traversal."
+            },
+            2: {
+                title: "Stage 2: mTLS / Zero-Trust Perimeter Gate",
+                standard: "SPIFFE / TLS 1.3 Strict",
+                desc: "Every peer connection requires mutual TLS authentication using ephemeral x509 micro-certificates. Denies unauthenticated lateral movement within container clusters."
+            },
+            3: {
+                title: "Stage 3: EU AI Act Guardrails (MCP)",
+                standard: "Regulation (EU) 2024/1689",
+                desc: "LangGraph supervisor loops evaluate model prompts and tool calls. Intercepts anomalous tokens, prevents data poisoning, and enforces human-in-the-loop oversight."
+            },
+            4: {
+                title: "Stage 4: Merkle Tree Ledger (SHA-256)",
+                standard: "Cryptographic RFC 6962",
+                desc: "Assessment payloads are hashed into an immutable Merkle tree. Leaves are chained cryptographically to guarantee retroactive tamper detection across state transitions."
+            },
+            5: {
+                title: "Stage 5: Post-Quantum Signature Anchor",
+                standard: "NIST FIPS 204 (ML-DSA)",
+                desc: "The Merkle Root is signed using NIST-standardized Module-Lattice Digital Signatures (ML-DSA), safeguarding audit integrity against future cryptanalytic quantum computers."
+            }
+        };
 
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => {
-                    b.classList.remove('border-qg-cyan', 'bg-qg-cyan/10', 'text-qg-cyan');
-                    b.classList.add('border-transparent', 'text-gray-400');
-                });
-                tabContents.forEach(c => c.classList.remove('active'));
+        const flowSteps = document.querySelectorAll('.flow-step');
+        const flowTitle = document.getElementById('flow-step-title');
+        const flowStandard = document.getElementById('flow-step-standard');
+        const flowDesc = document.getElementById('flow-step-desc');
 
-                btn.classList.remove('border-transparent', 'text-gray-400');
-                btn.classList.add('border-qg-cyan', 'bg-qg-cyan/10', 'text-qg-cyan');
+        flowSteps.forEach(step => {
+            step.addEventListener('click', () => {
+                flowSteps.forEach(s => s.querySelector('div').classList.remove('border-brand-cyan', 'shadow-[0_0_15px_rgba(6,182,212,0.4)]'));
+                step.querySelector('div').classList.add('border-brand-cyan', 'shadow-[0_0_15px_rgba(6,182,212,0.4)]');
                 
-                const target = btn.getAttribute('data-target');
-                const targetContent = document.getElementById(`content-${target}`);
-                if (targetContent) {
-                    targetContent.classList.add('active');
+                const num = step.getAttribute('data-step');
+                if (flowData[num]) {
+                    flowTitle.textContent = flowData[num].title;
+                    flowStandard.textContent = flowData[num].standard;
+                    flowDesc.textContent = flowData[num].desc;
                 }
             });
         });
 
-        // Intersection Observer for Sidebar Active State
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const mainContent = document.getElementById('main-content');
+        // 4. Modal Spec Inspector Payloads
+        const specPayloads = {
+            dora: {
+                title: "DORA Resilience Engine Specification",
+                subtitle: "quantigrade.core.dora_severity.calculate_dora_severity",
+                format: "YAML / OPENAPI 3.1",
+                code: `components:
+  schemas:
+    DORASeverityInput:
+      type: object
+      required:
+        - clients_affected_percentage
+        - transaction_volume_impact_eur
+        - critical_services_disrupted
+        - data_compromised
+      properties:
+        clients_affected_percentage:
+          type: number
+          minimum: 0.0
+          maximum: 100.0
+          example: 12.5
+        transaction_volume_impact_eur:
+          type: number
+          example: 250000.00
+        critical_services_disrupted:
+          type: boolean
+          example: true
+        data_compromised:
+          type: string
+          enum: [NONE, INTEGRITY_LOSS, CONFIDENTIALITY_BREACH]
+          example: "INTEGRITY_LOSS"
 
-        const observerOptions = {
-            root: mainContent,
-            rootMargin: '-15% 0px -70% 0px',
-            threshold: 0
+    DORASeverityResult:
+      type: object
+      properties:
+        classification:
+          type: string
+          enum: [MAJOR_INCIDENT, SIGNIFICANT_INCIDENT, MINOR_INCIDENT]
+          example: "MAJOR_INCIDENT"
+        escalation_required:
+          type: boolean
+          example: true
+        regulatory_deadline_hours:
+          type: integer
+          example: 4`
+            },
+            pqc: {
+                title: "NIST FIPS 204 Post-Quantum Specification",
+                subtitle: "ML-DSA-87 / ML-KEM-1024 Hybrid Envelope",
+                format: "JSON / CRYPTOGRAPHIC INVARIANT",
+                code: `{
+  "algorithm": "ML-DSA-87",
+  "nist_standard": "FIPS 204",
+  "security_category": 5,
+  "public_key_bytes": 2592,
+  "signature_bytes": 4595,
+  "payload_envelope": {
+    "signed_root": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+    "timestamp_utc": "2026-09-03T11:45:00Z",
+    "lattice_parameters": {
+      "k": 8,
+      "l": 7,
+      "gamma1": 524288,
+      "gamma2": 95232
+    },
+    "verification_status": "VALID_QUANTUM_RESILIENT"
+  }
+}`
+            },
+            ai_act: {
+                title: "EU AI Act Guardrails (MCP Protocol)",
+                subtitle: "Model Context Protocol Interceptor Schema",
+                format: "JSON-SCHEMA / MCP v1.0",
+                code: `{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EU_AI_Act_High_Risk_Filter",
+  "type": "object",
+  "required": ["prompt_sanitized", "drift_metric", "human_gate_authorized"],
+  "properties": {
+    "prompt_sanitized": {
+      "type": "boolean",
+      "description": "OWASP LLM01 Prompt Injection Firewall check"
+    },
+    "drift_metric": {
+      "type": "number",
+      "maximum": 0.05,
+      "description": "Maximum tolerated statistical drift in inference distribution"
+    },
+    "human_gate_authorized": {
+      "type": "boolean",
+      "description": "Article 14 mandatory sign-off when confidence < 0.95"
+    }
+  }
+}`
+            },
+            cra: {
+                title: "Cyber Resilience Act SBOM Specification",
+                subtitle: "CycloneDX 1.6 Machine-Readable Attestation",
+                format: "JSON / CYCLONEDX 1.6",
+                code: `{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-09-03T11:45:00Z",
+    "tools": [{ "vendor": "Quantigrade", "name": "CRA-Engine", "version": "2.0" }],
+    "component": {
+      "type": "application",
+      "name": "quantigrade-core",
+      "version": "2.0.0",
+      "hashes": [{ "alg": "SHA-256", "content": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }]
+    }
+  }
+}`
+            },
+            immutability: {
+                title: "Merkle Tree Audit Proof Specification",
+                subtitle: "Cryptographic RFC 6962 Verification Proof",
+                format: "JSON / MERKLE AUDIT PROOF",
+                code: `{
+  "tree_size": 24,
+  "leaf_index": 12,
+  "audit_path": [
+    "5f4dcc3b5aa765d61d8327deb882cf99",
+    "c8a14b533f7d73010b2dfcbb982d61a8",
+    "9e107d9d372bb6826bd81d3542a419d6"
+  ],
+  "root_hash": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+  "mathematical_invariant": "VERIFIED_NON_REPUDIATION"
+}`
+            },
+            hardening: {
+                title: "CCN-CERT CLARA Remediation Policy",
+                subtitle: "Linux Kernel Security Parameters (RD 311/2022)",
+                format: "BASH / SYSCTL SPEC",
+                code: `#!/usr/bin/env bash
+# CCN-CERT CLARA Baseline Enforcement (ENS-ALTO)
+set -euo pipefail
+
+sysctl -w fs.protected_hardlinks=1
+sysctl -w fs.protected_symlinks=1
+sysctl -w fs.suid_dumpable=0
+sysctl -w kernel.randomize_va_space=2
+sysctl -w net.ipv4.conf.all.rp_filter=1
+sysctl -w net.ipv4.conf.all.accept_redirects=0
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+
+echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
+            }
         };
+
+        const modalBackdrop = document.getElementById('spec-modal-backdrop');
+        const modalElement = document.getElementById('spec-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalSubtitle = document.getElementById('modal-subtitle');
+        const modalFormat = document.getElementById('modal-format-badge');
+        const modalCode = document.getElementById('modal-code-content');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalCopyBtn = document.getElementById('modal-copy-btn');
+
+        document.querySelectorAll('.open-spec-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modKey = btn.getAttribute('data-module');
+                if (specPayloads[modKey]) {
+                    const data = specPayloads[modKey];
+                    modalTitle.textContent = data.title;
+                    modalSubtitle.textContent = data.subtitle;
+                    modalFormat.textContent = `FORMAT: ${data.format}`;
+                    modalCode.textContent = data.code;
+
+                    modalBackdrop.classList.remove('hidden');
+                    modalElement.classList.add('modal-enter-active');
+                    lucide.createIcons();
+                }
+            });
+        });
+
+        function closeModal() {
+            modalBackdrop.classList.add('hidden');
+            modalElement.classList.remove('modal-enter-active');
+        }
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        modalBackdrop.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modalBackdrop.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        modalCopyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(modalCode.textContent).then(() => {
+                modalCopyBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-brand-emerald"></i> Copied!';
+                lucide.createIcons();
+                setTimeout(() => {
+                    modalCopyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Spec';
+                    lucide.createIcons();
+                }, 2000);
+            });
+        });
+
+        // 5. Compliance Matrix Tab Switching
+        const matrixBtns = document.querySelectorAll('.matrix-btn');
+        const matrixViews = document.querySelectorAll('.matrix-view');
+
+        matrixBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                matrixBtns.forEach(b => {
+                    b.classList.remove('bg-brand-cyan/20', 'text-brand-cyan', 'font-bold', 'border', 'border-brand-cyan/40');
+                    b.classList.add('text-gray-400');
+                });
+                matrixViews.forEach(v => v.classList.add('hidden'));
+
+                btn.classList.add('bg-brand-cyan/20', 'text-brand-cyan', 'font-bold', 'border', 'border-brand-cyan/40');
+                btn.classList.remove('text-gray-400');
+
+                const targetId = `tab-${btn.getAttribute('data-target')}`;
+                const activeView = document.getElementById(targetId);
+                if (activeView) activeView.classList.remove('hidden');
+            });
+        });
+
+        // 6. Mobile Drawer Toggle
+        const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
+        const drawerCloseBtn = document.getElementById('drawer-close-btn');
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        const drawerLinks = document.querySelectorAll('.drawer-link');
+
+        function openDrawer() {
+            drawerBackdrop.classList.remove('hidden');
+            setTimeout(() => {
+                mobileDrawer.classList.remove('-translate-x-full');
+            }, 10);
+        }
+
+        function closeDrawer() {
+            mobileDrawer.classList.add('-translate-x-full');
+            setTimeout(() => {
+                drawerBackdrop.classList.add('hidden');
+            }, 300);
+        }
+
+        if (mobileToggleBtn) mobileToggleBtn.addEventListener('click', openDrawer);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+        if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+        drawerLinks.forEach(link => link.addEventListener('click', closeDrawer));
+
+        // 7. Desktop ScrollSpy for Navigation Active Indicator
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('#desktop-nav .nav-link');
+        const mainInspector = document.getElementById('main-inspector');
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute('id');
                     navLinks.forEach(link => {
-                        link.classList.remove('nav-active', 'border-qg-cyan', 'text-qg-cyan', 'bg-qg-cyan/8');
-                        link.classList.add('border-transparent', 'text-qg-textmuted');
+                        link.classList.remove('nav-item-active');
                         if (link.getAttribute('href') === `#${id}`) {
-                            link.classList.remove('border-transparent', 'text-qg-textmuted');
-                            link.classList.add('nav-active', 'border-qg-cyan', 'text-qg-cyan', 'bg-qg-cyan/8');
+                            link.classList.add('nav-item-active');
                         }
                     });
                 }
             });
-        }, observerOptions);
+        }, { root: mainInspector, rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
-        sections.forEach(sec => observer.observe(sec));
-
-        // Mobile Menu Toggle
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        if (mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
-            });
-        }
+        sections.forEach(s => observer.observe(s));
     </script>
 </body>
 </html>
