@@ -1,0 +1,26 @@
+{
+  "name": "quantigrade-core",
+  "version": "1.0.0",
+  "description": "**Enterprise-grade Python package for automated regulatory compliance auditing.**",
+  "main": "tailwind.config.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tardigrado-76/quantigrade-core.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Tardigrado-76/quantigrade-core/issues"
+  },
+  "homepage": "https://github.com/Tardigrado-76/quantigrade-core#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
