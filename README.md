@@ -1,19 +1,17 @@
 # 🛡️ Quantigrade Core
 
-**Enterprise-grade Python package for automated regulatory compliance auditing.**
-
-[![CI/CD Pipeline](https://github.com/Tardigrado-76/quantigrade-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Tardigrado-76/quantigrade-core/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue.svg)](https://github.com/Tardigrado-76/quantigrade-core/actions/workflows/ci.yml)
+[![OpenAPI 3.1](https://img.shields.io/badge/API-OpenAPI%203.1-green.svg)](./openapi.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![OpenAPI 3.1](https://img.shields.io/badge/OpenAPI-3.1-green.svg)](./openapi.yaml)
+
+> **Enterprise-grade Python package for automated regulatory compliance auditing. Implements the DORA Article 18 / RTS EBA major incident classification engine, along with integrations for ENS Alta, NIS2, RGPD, CRA, and EU AI Act compliance frameworks.**
 
 ---
 
-## 🎯 Overview
+## 🎯 Executive Overview
 
-`quantigrade-core` is a production-ready Python package that implements the **DORA Article 18 / RTS EBA major incident classification engine**, along with integrations for ENS Alta, NIS2, RGPD, CRA, and EU AI Act compliance frameworks.
-
-Designed for **Principal DevSecOps Engineers and CISOs** who need auditable, testable, and API-First compliance tooling.
+`quantigrade-core` is a production-ready Python package designed for **Principal DevSecOps Engineers and CISOs** who need auditable, testable, and API-First compliance tooling.
 
 ---
 
