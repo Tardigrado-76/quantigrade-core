@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tardigrado-76.github.io/quantigrade-core/sitemap.xml
