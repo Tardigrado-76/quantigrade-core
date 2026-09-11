@@ -580,7 +580,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 
                 <!-- 1. DORA Engine -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-brand-cyan/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -588,7 +588,10 @@
                                     <i data-lucide="activity" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-brand-cyan transition-colors">DORA Resilience Engine</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="font-bold text-base text-white group-hover:text-brand-cyan transition-colors flex items-center gap-1.5" title="View dora_severity.py on GitHub">
+                                        DORA Resilience Engine
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-brand-cyan"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">RTS EBA Incident Severity</span>
                                 </div>
                             </div>
@@ -598,16 +601,20 @@
                             Calculates critical ICT incident thresholds (clients affected, downtime, economic impact, data loss) programmatically according to European Banking Authority RTS criteria.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-brand-cyan">dora_severity.py</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-brand-cyan hover:text-white flex items-center gap-1 transition-colors" data-module="dora">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py" target="_blank" class="font-mono text-[10px] text-brand-cyan hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-brand-cyan/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-brand-cyan"></i>
+                            <code>dora_severity.py</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-brand-cyan"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-brand-cyan hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-brand-cyan/10 border border-brand-cyan/30 hover:bg-brand-cyan/20" data-module="dora">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- 2. PQC FIPS 204 -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-purple-500/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -615,7 +622,10 @@
                                     <i data-lucide="lock" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-purple-400 transition-colors">Post-Quantum Cryptography</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0002-post-quantum-cryptography-standard.md" target="_blank" class="font-bold text-base text-white group-hover:text-purple-400 transition-colors flex items-center gap-1.5" title="View ADR-0002 on GitHub">
+                                        Post-Quantum Cryptography
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-purple-400"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">FIPS 204 (ML-DSA) & FIPS 203</span>
                                 </div>
                             </div>
@@ -625,16 +635,20 @@
                             Neutralizes Harvest-Now-Decrypt-Later (HNDL) threats by establishing lattice-based digital signatures and key encapsulation mechanisms verified against NIST benchmarks.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-purple-400">ADR-0002 Spec</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-purple-400 hover:text-white flex items-center gap-1 transition-colors" data-module="pqc">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0002-post-quantum-cryptography-standard.md" target="_blank" class="font-mono text-[10px] text-purple-400 hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-purple-500/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-purple-400"></i>
+                            <code>ADR-0002 Spec</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-purple-400"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-purple-400 hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20" data-module="pqc">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- 3. EU AI Act Guardrails -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-blue-500/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -642,7 +656,10 @@
                                     <i data-lucide="cpu" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-blue-400 transition-colors">EU AI Act Guardrails</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/openapi.yaml" target="_blank" class="font-bold text-base text-white group-hover:text-blue-400 transition-colors flex items-center gap-1.5" title="View openapi.yaml on GitHub">
+                                        EU AI Act Guardrails
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-blue-400"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">MCP Protocol Interceptors</span>
                                 </div>
                             </div>
@@ -652,16 +669,20 @@
                             Provides continuous oversight for High-Risk AI systems (Articles 9, 12, 14). Intercepts prompts and tool execution cycles via Model Context Protocol to eliminate hallucinations and data poisoning.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-blue-400">langgraph_mcp.py</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-blue-400 hover:text-white flex items-center gap-1 transition-colors" data-module="ai_act">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/openapi.yaml" target="_blank" class="font-mono text-[10px] text-blue-400 hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-blue-500/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-blue-400"></i>
+                            <code>openapi.yaml (MCP)</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-blue-400"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-blue-400 hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20" data-module="ai_act">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- 4. CRA Supply Chain & SBOM -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-amber-500/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -669,7 +690,10 @@
                                     <i data-lucide="box" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">CRA Supply Chain Engine</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/pyproject.toml" target="_blank" class="font-bold text-base text-white group-hover:text-amber-400 transition-colors flex items-center gap-1.5" title="View pyproject.toml on GitHub">
+                                        CRA Supply Chain Engine
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-amber-400"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">CycloneDX 1.6 & CISA KEV</span>
                                 </div>
                             </div>
@@ -679,16 +703,20 @@
                             Mandatory Software Bill of Materials (SBOM) generation signed cryptographically in CI/CD. Blocks release pipelines instantly if dependencies match known exploited vulnerabilities.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-amber-400">cyclonedx_sbom.json</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-amber-400 hover:text-white flex items-center gap-1 transition-colors" data-module="cra">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/pyproject.toml" target="_blank" class="font-mono text-[10px] text-amber-400 hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-amber-500/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-amber-400"></i>
+                            <code>pyproject.toml (SBOM)</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-amber-400"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-amber-400 hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20" data-module="cra">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- 5. Merkle Immutability -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-teal-500/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -696,7 +724,10 @@
                                     <i data-lucide="git-commit" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-teal-400 transition-colors">Merkle Tree Ledger</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0001-record-architecture-decisions.md" target="_blank" class="font-bold text-base text-white group-hover:text-teal-400 transition-colors flex items-center gap-1.5" title="View ADR-0001 on GitHub">
+                                        Merkle Tree Ledger
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-teal-400"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">SHA-256 Tamper-Proof Audit</span>
                                 </div>
                             </div>
@@ -706,16 +737,20 @@
                             Creates cryptographic leaf hashes for every compliance assessment. Forms an incremental Merkle Tree guaranteeing non-repudiation for regulatory auditors and judicial reviews.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-teal-400">merkle_audit.py</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-teal-400 hover:text-white flex items-center gap-1 transition-colors" data-module="immutability">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0001-record-architecture-decisions.md" target="_blank" class="font-mono text-[10px] text-teal-400 hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-teal-500/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-teal-400"></i>
+                            <code>ADR-0001 Merkle</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-teal-400"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-teal-400 hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20" data-module="immutability">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- 6. OS Hardening -->
-                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group">
+                <div class="glass-panel p-5 rounded-xl flex flex-col justify-between group hover:border-brand-emerald/60 transition-all">
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
@@ -723,7 +758,10 @@
                                     <i data-lucide="server" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-base text-white group-hover:text-brand-emerald transition-colors">CCN-CERT OS Hardening</h4>
+                                    <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docker-compose.yml" target="_blank" class="font-bold text-base text-white group-hover:text-brand-emerald transition-colors flex items-center gap-1.5" title="View docker-compose.yml on GitHub">
+                                        CCN-CERT OS Hardening
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 text-brand-emerald"></i>
+                                    </a>
                                     <span class="text-[10px] font-mono text-brand-muted">ENS Alto & CIS Benchmark</span>
                                 </div>
                             </div>
@@ -733,9 +771,13 @@
                             Automates kernel-level parameter enforcement, eliminating privileged container escape paths and applying National Cryptologic Center (CCN-STIC) baselines.
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-                        <span class="font-mono text-[10px] text-gray-400"><code class="text-brand-emerald">clara_remediation.sh</code></span>
-                        <button class="open-spec-btn text-xs font-mono text-brand-emerald hover:text-white flex items-center gap-1 transition-colors" data-module="hardening">
+                    <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2 flex-wrap">
+                        <a href="https://github.com/tardigrado-76/quantigrade-core/blob/main/docker-compose.yml" target="_blank" class="font-mono text-[10px] text-brand-emerald hover:underline flex items-center gap-1.5 group/link bg-brand-base px-2.5 py-1 rounded border border-brand-border hover:border-brand-emerald/50 transition-colors" title="Inspect source file on GitHub">
+                            <i data-lucide="github" class="w-3 h-3 text-brand-emerald"></i>
+                            <code>docker-compose.yml</code>
+                            <i data-lucide="external-link" class="w-2.5 h-2.5 text-brand-emerald"></i>
+                        </a>
+                        <button class="open-spec-btn text-xs font-mono text-brand-emerald hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-brand-emerald/10 border border-brand-emerald/30 hover:bg-brand-emerald/20" data-module="hardening">
                             Inspect Spec <i data-lucide="code-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -1109,7 +1151,10 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-3.5 border-t border-brand-border bg-brand-base/90 flex items-center justify-between">
+            <div class="p-3.5 border-t border-brand-border bg-brand-base/90 flex items-center justify-between gap-2 flex-wrap">
+                <a id="modal-repo-btn" href="#" target="_blank" class="px-3 py-1.5 rounded bg-brand-cyan/10 border border-brand-cyan/30 text-xs font-mono text-brand-cyan hover:bg-brand-cyan hover:text-black flex items-center gap-1.5 transition-all hidden">
+                    <i data-lucide="github" class="w-3.5 h-3.5"></i> View Repo Source <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
                 <span class="text-[10px] font-mono text-brand-muted">Quantigrade Invariant Specification v2.0</span>
                 <button id="modal-copy-btn" class="px-3 py-1.5 rounded bg-brand-surface border border-brand-border text-xs font-mono text-white hover:border-brand-cyan flex items-center gap-1.5 transition-colors">
                     <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Spec
@@ -1242,6 +1287,7 @@
                 title: "DORA Resilience Engine Specification",
                 subtitle: "quantigrade.core.dora_severity.calculate_dora_severity",
                 format: "YAML / OPENAPI 3.1",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py",
                 code: `components:
   schemas:
     DORASeverityInput:
@@ -1286,6 +1332,7 @@
                 title: "NIST FIPS 204 Post-Quantum Specification",
                 subtitle: "ML-DSA-87 / ML-KEM-1024 Hybrid Envelope",
                 format: "JSON / CRYPTOGRAPHIC INVARIANT",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0002-post-quantum-cryptography-standard.md",
                 code: `{
   "algorithm": "ML-DSA-87",
   "nist_standard": "FIPS 204",
@@ -1309,6 +1356,7 @@
                 title: "EU AI Act Guardrails (MCP Protocol)",
                 subtitle: "Model Context Protocol Interceptor Schema",
                 format: "JSON-SCHEMA / MCP v1.0",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/openapi.yaml",
                 code: `{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "EU_AI_Act_High_Risk_Filter",
@@ -1335,6 +1383,7 @@
                 title: "Cyber Resilience Act SBOM Specification",
                 subtitle: "CycloneDX 1.6 Machine-Readable Attestation",
                 format: "JSON / CYCLONEDX 1.6",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/pyproject.toml",
                 code: `{
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
@@ -1356,6 +1405,7 @@
                 title: "Merkle Tree Audit Proof Specification",
                 subtitle: "Cryptographic RFC 6962 Verification Proof",
                 format: "JSON / MERKLE AUDIT PROOF",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0001-record-architecture-decisions.md",
                 code: `{
   "tree_size": 24,
   "leaf_index": 12,
@@ -1372,6 +1422,7 @@
                 title: "CCN-CERT CLARA Remediation Policy",
                 subtitle: "Linux Kernel Security Parameters (RD 311/2022)",
                 format: "BASH / SYSCTL SPEC",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/docker-compose.yml",
                 code: `#!/usr/bin/env bash
 # CCN-CERT CLARA Baseline Enforcement (ENS-ALTO)
 set -euo pipefail
@@ -1390,6 +1441,7 @@ echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
                 title: "OpenSSF Scorecard & Supply Chain Assurance",
                 subtitle: "SLSA Level 3 Attestation & Dependency Pinning",
                 format: "IN-TOTO / SLSA v1.0 SPEC",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/.github/workflows/ci.yml",
                 code: `{
   "_type": "https://in-toto.io/Statement/v1",
   "subject": [
@@ -1417,6 +1469,7 @@ echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
                 title: "DORA EU 2022/2554 Executive Regulatory Ledger",
                 subtitle: "ICT Risk Framework (Art. 6) & Register of Information (Art. 28)",
                 format: "REGULATORY / DORA EVIDENCE",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/src/quantigrade/core/dora_severity.py",
                 code: `{
   "regulation": "REGULATION (EU) 2022/2554 (DORA)",
   "enforcement_date": "2025-01-17",
@@ -1434,6 +1487,7 @@ echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
                 title: "NIST FIPS 204 Post-Quantum Attestation",
                 subtitle: "Module-Lattice Digital Signature Algorithm (ML-DSA-87)",
                 format: "CRYPTOGRAPHIC / FIPS 204",
+                repo_url: "https://github.com/tardigrado-76/quantigrade-core/blob/main/docs/adr/0002-post-quantum-cryptography-standard.md",
                 code: `{
   "nist_standard": "NIST FIPS 204 (August 2024)",
   "primitive": "ML-DSA-87 (Dilithium5 equivalent)",
@@ -1461,6 +1515,7 @@ echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
         const modalCode = document.getElementById('modal-code-content');
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const modalCopyBtn = document.getElementById('modal-copy-btn');
+        const modalRepoBtn = document.getElementById('modal-repo-btn');
 
         document.querySelectorAll('.open-spec-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1471,6 +1526,13 @@ echo "[✓] CCN-CERT CLARA Level 2 Hardening Invariants Enforced."`
                     modalSubtitle.textContent = data.subtitle;
                     modalFormat.textContent = `FORMAT: ${data.format}`;
                     modalCode.textContent = data.code;
+
+                    if (data.repo_url && modalRepoBtn) {
+                        modalRepoBtn.href = data.repo_url;
+                        modalRepoBtn.classList.remove('hidden');
+                    } else if (modalRepoBtn) {
+                        modalRepoBtn.classList.add('hidden');
+                    }
 
                     modalBackdrop.classList.remove('hidden');
                     modalElement.classList.add('modal-enter-active');
