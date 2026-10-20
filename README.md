@@ -1,4 +1,4 @@
-# 🛡️ Quantigrade Core
+# Quantigrade Core
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue.svg)](https://github.com/Tardigrado-76/quantigrade-core/actions/workflows/ci.yml)
@@ -9,13 +9,13 @@
 
 ---
 
-## 🎯 Executive Overview
+## Executive Overview
 
 `quantigrade-core` is a production-ready Python package designed for **Principal DevSecOps Engineers and CISOs** who need auditable, testable, and API-First compliance tooling.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 quantigrade-core/
@@ -39,7 +39,7 @@ quantigrade-core/
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Install via pip
 ```bash
@@ -76,42 +76,42 @@ print(result.notification_deadline_hours)  # 2
 
 ---
 
-## 🛡️ Normative Coverage
+## Normative Coverage
 
 | Framework | Coverage | Automated Controls |
 |---|---|---|
-| **DORA** (Reg. EU 2022/2554) | ✅ Full | Incident classification RTS EBA, TLPT, ICT Third-Party Risk |
-| **ENS Alta** (RD 311/2022) | ✅ Full | Access control (op.acc.1), Patch management (op.exp.4) |
-| **NIS2** (Dir. EU 2022/2555) | ✅ Full | CSIRT notification 24h/72h, VEX supply chain |
-| **RGPD / LOPDGDD** | ✅ Full | Breach assessment 72h, SAR extraction, pseudonymization |
-| **CRA** (Cyber Resilience Act) | ✅ Full | SBOM CycloneDX 1.6, SLSA Level 3+ |
-| **EU AI Act** | ✅ Full | High-risk AI risk matrix, human oversight |
-| **OWASP LLM Top 10** | ✅ Full | RAG Guardrails, Prompt Injection, PII detection |
+| **DORA** (Reg. EU 2022/2554) | Full | Incident classification RTS EBA, TLPT, ICT Third-Party Risk |
+| **ENS Alta** (RD 311/2022) | Full | Access control (op.acc.1), Patch management (op.exp.4) |
+| **NIS2** (Dir. EU 2022/2555) | Full | CSIRT notification 24h/72h, VEX supply chain |
+| **RGPD / LOPDGDD** | Full | Breach assessment 72h, SAR extraction, pseudonymization |
+| **CRA** (Cyber Resilience Act) | Full | SBOM CycloneDX 1.6, SLSA Level 3+ |
+| **EU AI Act** | Full | High-risk AI risk matrix, human oversight |
+| **OWASP LLM Top 10** | Full | RAG Guardrails, Prompt Injection, PII detection |
 
 ---
 
-## 🔧 DevSecOps Pipeline
+## DevSecOps Pipeline
 
 Every `push` to `main` triggers the CI/CD pipeline:
 
-1. 🔍 **Static Analysis**: `ruff` (linting) + `mypy` (strict type checking)
-2. 🚫 **SAST Security**: `bandit` (vulnerability scanner)
-3. ✅ **Unit Tests**: `pytest` with `>80%` code coverage gate
-4. 📦 **Package Build**: `pip build` + integrity verification
+1. **Static Analysis**: `ruff` (linting) + `mypy` (strict type checking)
+2. **SAST Security**: `bandit` (vulnerability scanner)
+3. **Unit Tests**: `pytest` with `>80%` code coverage gate
+4. **Package Build**: `pip build` + integrity verification
 
 ---
 
-## 📄 Architecture Decision Records
+## Architecture Decision Records
 
 - [ADR-0001: API-First Architecture (FastAPI)](./docs/adr/0001-record-architecture-decisions.md)
 - [ADR-0002: Post-Quantum Cryptography Standard (FIPS 204 ML-DSA)](./docs/adr/0002-post-quantum-cryptography-standard.md)
 
 ---
 
-## 📊 CISO / CTO Executive Report
+## CISO / CTO Executive Report
 
 See [COMPLIANCE_MANAGER Executive Report](https://github.com/Tardigrado-76/COMPLIANCE_MANAGER) for the full security posture assessment.
 
 ---
 
-*© 2026 Tardigrado-76 / Quantigrade | Licensed under MIT*
+*2026 Tardigrado-76 / Quantigrade | Licensed under MIT*
